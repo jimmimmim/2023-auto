@@ -5,7 +5,9 @@ module.exports = {
   purge: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      'mapHeight': '800px',
+    },
   },
   variants: {
     extend: {},
