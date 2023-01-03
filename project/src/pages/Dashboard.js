@@ -16,17 +16,9 @@ export default function Map() {
       .then(res => setData(res.data))
   }
 
+  // id popup
   const onEachFeature = (feature, layer) => {
-    layer.options.weight = 2;
-    layer.options.dashArray = 1;
-    layer.options.opacity = 1;
- 
-    layer.bindPopup(feature.properties.val)
-    layer.on({
-      // mouseover: (e) => this.onMouseOver(e, feature),
-      // mouseout: (e) => this.onMouseOut(e, feature),
-      click: (e) => this.onMouseClick(e, feature),
-    })
+    layer.bindPopup('<h1 class="font-bold">'+feature.geometry.type+'</h1><p>id: '+feature.properties.id+'</p>');
   };
   
   const confirmedStyle = (feature) => {
@@ -72,7 +64,7 @@ export default function Map() {
     }
   }
 
-  console.log(polylines)
+  // console.log(polylines)
 
   // Create a polygon geometry
   const polygon = {
