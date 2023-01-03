@@ -79,8 +79,8 @@ export default function Map() {
   return (
     <div id='map' className='w-4/5' style={{height: '800px'}}>
       <MapContainer
-        center={[37.585525764712955, 127.05753783247755]} // 서울시립대
-        zoom={15}
+        center={[37.58360620664327, 127.05843925233872]} // 서울시립대
+        zoom={20}
         scrollWheelZoom={true} 
         style={{ height: "100%", width: "100%" }}
       >
