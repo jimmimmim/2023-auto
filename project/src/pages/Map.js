@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON, Circle, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -6,8 +6,10 @@ import ddmgrids from '../data/ddmgrids.json';
 import test1 from '../data/test1.json';
 import test2 from '../data/test2.json';
 import test3 from '../data/test3.json';
+
  
 export default function Map() { 
+
   const onEachFeature = (feature, layer) => {
     layer.options.weight = 2;
     layer.options.dashArray = 1;
@@ -40,11 +42,13 @@ export default function Map() {
 
   const fillBlueOptions = {
     color: 'blue',
-    fillColor: 'blue' 
+    fillColor: 'blue',
+    dashArray: 4,
   }
   const fillRedOptions = {
     color: 'red',
-    fillColor: 'red' 
+    fillColor: 'red',
+    dashArray: 4,
   }
 
   const fillBlackOptions = {
