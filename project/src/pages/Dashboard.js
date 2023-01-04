@@ -19,7 +19,7 @@ export default function Map() {
         console.log('max zoom');
         // location.addLayer();
       }
-      console.log(location.getZoom());
+      console.log('current zoomlevel: ', location.getZoom());
     })
     return null
   }
@@ -34,9 +34,28 @@ export default function Map() {
   }
 
   // grid - id popup
-  // const onEachFeature = (feature, layer, e) => {
-  //   layer.bindPopup('<h1 class="font-bold">'+feature.geometry.type+'</h1><p>id: '+feature.properties.id+'</p>');
-  // };
+  const onEachFeature = (feature, layer, e) => {
+    layer.bindPopup(
+      '<div>'+feature.properties.gid+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][0]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][1]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][2]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][3]+'</div>'
+    );
+  };
+  // grid - id popup - 2 (10*10)
+  const onEachFeature2 = (feature, layer, e) => {
+    if (feature.properties.id !== undefined){
+      console.log(feature.properties.id);
+    }
+    layer.bindPopup(
+      '<div>'+feature.properties.id+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][0]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][1]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][2]+'</div>'+
+      '<div>'+feature.geometry.coordinates[0][0][3]+'</div>'
+    );
+  };
   
   const confirmedStyle = (feature) => {
       // const confirmed = feature.properties.val;
@@ -57,6 +76,41 @@ export default function Map() {
           fillOpacity: 0
         }
       } 
+  };
+
+  const valueStyle = (feature) => {
+      const confirmed = feature.properties.value;
+      console.log(confirmed);
+      if (!confirmed) {
+        return {
+          color: 'white', // stroke color
+          weight: 1, // stroke width (default: 3)
+          opacity: 1, // stroke opacity (default: 1.0)
+          fillcolor: 'white',
+          fillOpacity: 0
+        }
+      } else if (confirmed === 1) {
+        return {
+          weight: 1, // stroke width (default: 3)
+          color: 'red',
+          fillcolor: 'red', 
+          fillOpacity: 0.2
+        }
+      } else if (confirmed === 2) {
+        return {
+          weight: 1, // stroke width (default: 3)
+          color: 'red',
+          fillcolor: 'red', 
+          fillOpacity: 0.4
+        }
+      } else if (confirmed === 3) {
+        return {
+          weight: 1, // stroke width (default: 3)
+          color: 'red',
+          fillcolor: 'red', 
+          fillOpacity: 0.6
+        }
+      }
   };
 
   const lineOptions = [
@@ -141,14 +195,14 @@ export default function Map() {
               <LayersControl.Overlay checked name="10m 격자">
               <GeoJSON 
                 data={seouluniv} 
-                // onEachFeature={onEachFeature}
-                style={confirmedStyle}
+                onEachFeature={onEachFeature2}
+                style={valueStyle}
               />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="100m 격자">
               <GeoJSON 
                 data={ddmgrids} 
-                // onEachFeature={onEachFeature}
+                onEachFeature={onEachFeature}
                 style={confirmedStyle}
               />
               </LayersControl.Overlay>
