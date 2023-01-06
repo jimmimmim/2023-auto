@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useMapEvents, Popup } from 'react-leaflet';
+import  { useState } from 'react';
+import { useMapEvents } from 'react-leaflet';
 
 // return location at which the click occurred
 export default function LocationFinderDummy() {

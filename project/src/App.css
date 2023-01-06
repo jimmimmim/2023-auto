@@ -41,3 +41,8 @@
   height: 400px;
   width: 100%;
 }
+
+.leaflet-tile-pane {
+  -webkit-filter: grayscale(60%);
+  filter: grayscale(60%);
+}
