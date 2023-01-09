@@ -43,6 +43,6 @@
 }
 
 .leaflet-tile-pane {
-  -webkit-filter: grayscale(60%);
-  filter: grayscale(60%);
+  -webkit-filter: grayscale(90%);
+  filter: grayscale(90%) hue-rotate(130deg) brightness(105%) contrast(110%);
 }

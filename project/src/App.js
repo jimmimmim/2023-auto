@@ -6,7 +6,6 @@ import NavBar from "./components/NavBar";
 
 import Map from "./pages/Map";
 import NoPage from "./pages/NoPage";
-import Dashboard from './pages/Dashboard';
 
 import './App.css';
 
@@ -21,7 +20,6 @@ function App() {
               <Route path="/" element={<NavBar />}>
                 <Route index element={<Map />} />
                 <Route path="map" element={<Map />} />
-                <Route path="dashboard" element={<Dashboard />} />
                 <Route path="*" element={<NoPage />} />
               </Route>
             </Routes>
