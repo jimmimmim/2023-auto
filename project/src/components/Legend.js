@@ -2,7 +2,6 @@ import { useMemo } from "react";
 
 export default function Legend ({ position }) {
 
-  // Classes used by Leaflet to position controls
   const POSITION_CLASSES = {
     bottomleft: 'leaflet-bottom leaflet-left',
     bottomright: 'leaflet-bottom leaflet-right',
@@ -10,7 +9,6 @@ export default function Legend ({ position }) {
     topright: 'leaflet-top leaflet-right',
   }
 
-  // Memoize the legend so it's not affected by position changes
   const legend = useMemo(
     () => (
       <div className="w-32 h-40 px-4 py-2 bg-white">

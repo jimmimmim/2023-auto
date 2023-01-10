@@ -19,16 +19,18 @@ import Legend from "../components/Legend";
 import PathContainer from "../components/PathContainer";
 
 import ddmgrids from '../data/ddmgrids.json';
-import seouluniv from '../data/seouluniv1010.json';
+// import seouluniv from '../data/seouluniv1010.json';
+import seouluniv from '../data/seouluniv10104326.json';
 import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
  
 export default function Map() { 
 
   function MapComponent() {
-    const map = useMapEvent('zoom', () => {
-      map.setView([37.58360620664327, 127.05843925233872]);
-    })
+    // // zoom in-out 시에도 중심좌표 유지
+    // const map = useMapEvent('zoom', () => {
+    //   map.setView([37.58360620664327, 127.05843925233872]);
+    // })
     const location = useMapEvent('click', () => {
       if (location.getZoom() === 18) {
         console.log('max zoom');
@@ -190,12 +192,15 @@ export default function Map() {
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
             scrollWheelZoom={false}
+            doubleClickZoom={false}
             style={{ height: "100%", width: "100%"}}
           >
             <LocationFinderDummy />
             <MapComponent />
             <TileLayer
               url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+              maxZoom={30}
+              maxNativeZoom={19}
             />
             {
               polylines.map((polyline, i) => (
@@ -239,18 +244,64 @@ export default function Map() {
               </LayersControl.Overlay>
               <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
-                <CircleMarker center={[37.583768439049024, 127.05970215216124]} pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} radius={5}>
+                {/* {data.map((v,i) => 
+                  v.map((w, j) => {
+                    <CircleMarker
+                      key={w.id}
+                      center={[w.lat, w.lon]}
+                      pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}}
+                      radius={5}
+                    />
+                  })
+                )} */}
+                <CircleMarker
+                  center={[37.5832868803, 127.0594854661]}
+                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}}
+                  radius={5}
+                  eventHandlers={{
+                    click: (e) => {
+                      console.log('marker clicked')
+                    },
+                  }}
+                >
                   <Popup>
-                    사고 발생 지점 (1)
+                    사고 발생 지점 (3)
+                    <img
+                      src={image2}
+                      alt={image2}
+                    />
+                  </Popup>
+                </CircleMarker>
+                <CircleMarker 
+                  center={[37.5824852936, 127.0579508334]} 
+                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
+                  radius={5}
+                  eventHandlers={{
+                    click: (e) => {
+                      console.log('marker clicked')
+                    },
+                  }}
+                >
+                  <Popup>
+                    사고 발생 지점 (2)
                     <img
                       src={image1}
                       alt={image1}
                     />  
                   </Popup>
                 </CircleMarker>
-                <CircleMarker center={[37.58270140536563, 127.05868828755078]} pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} radius={5}>
+                <CircleMarker 
+                  center={[37.5833905641, 127.0595627093]} 
+                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
+                  radius={5}
+                  eventHandlers={{
+                    click: (e) => {
+                      console.log('marker clicked')
+                    },
+                  }}
+                >
                   <Popup>
-                    사고 발생 지점 (2)
+                    사고 발생 지점 (1)
                     <img
                       src={image2}
                       alt={image2}
