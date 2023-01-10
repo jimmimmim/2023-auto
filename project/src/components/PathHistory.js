@@ -5,7 +5,7 @@ export default function PathHistory({robot, handleChange}) {
   let componentClass = "";
 
   if (robot.checked) {
-    componentClass = "bg-blue-900"; // #2D4A65로 변경
+    componentClass = "bg-gray-900"; // #2D4A65로 변경
   }
 
   const ref = useRef(null);

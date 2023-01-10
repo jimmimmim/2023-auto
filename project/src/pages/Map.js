@@ -21,6 +21,8 @@ import PathContainer from "../components/PathContainer";
 import ddmgrids from '../data/ddmgrids.json';
 // import seouluniv from '../data/seouluniv1010.json';
 import seouluniv from '../data/seouluniv10104326.json';
+import seouluniv_1m from '../data/seouluniv1mpolygon.json';
+import seouluniv_robot from '../data/seouluniv1mrobot.json';
 import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
  
@@ -94,6 +96,43 @@ export default function Map() {
   const gridStyle = (feature) => {
     // const confirmed = values[feature.properties.id];
     const confirmed = testValues[feature.properties.id];
+
+    if (!confirmed) {
+        return {
+        color: 'white', // stroke color
+        weight: 1, // stroke width (default: 3)
+        opacity: 1, // stroke opacity (default: 1.0)
+        fillcolor: 'white',
+        fillOpacity: 0.4
+        }
+    } else if (confirmed === 1) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.2
+        }
+    } else if (confirmed === 2) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.4
+        }
+    } else if (confirmed === 3) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.6
+        }
+    }
+  }
+
+  // 1m grid
+  const gridStyle2 = (feature) => {
+    const confirmed = feature.properties.polygon_id;
+    // const confirmed = testValues[feature.properties.id];
 
     if (!confirmed) {
         return {
@@ -228,6 +267,13 @@ export default function Map() {
             }
 
             <LayersControl>
+              <LayersControl.Overlay name="1m 격자">
+                <GeoJSON 
+                  data={seouluniv_1m} 
+                  // onEachFeature={onEachFeature}
+                  style={gridStyle2}
+                />
+              </LayersControl.Overlay>
               <LayersControl.Overlay name="10m 격자">
                 <GeoJSON 
                   data={seouluniv} 
@@ -235,13 +281,13 @@ export default function Map() {
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
-              <LayersControl.Overlay name="100m 격자">
+              {/* <LayersControl.Overlay name="100m 격자">
                 <GeoJSON 
                   data={ddmgrids} 
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 />
-              </LayersControl.Overlay>
+              </LayersControl.Overlay> */}
               <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 {/* {data.map((v,i) => 

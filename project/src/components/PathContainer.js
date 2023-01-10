@@ -80,7 +80,7 @@ export default function PathContainer() {
               selected.sort().map((v, i) => (
                 <button 
                 key={i} 
-                className={`px-3 py-1 mr-3 text-sm text-white border-white rounded-full hover:bg-gray-700 ${componentClass}`}
+                className={`px-3 py-1 mr-3 text-sm text-white border-white rounded-full bg-gray-700 hover:bg-gray-900 ${componentClass}`}
                 onClick={() => {uncheckItem(v)}}
                 >{v}</button>
               ))
