@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   MapContainer, 
   TileLayer, 
@@ -18,37 +18,47 @@ import Legend from "../components/Legend";
 
 import PathContainer from "../components/PathContainer";
 
-import ddmgrids from '../data/ddmgrids.json';
-// import seouluniv from '../data/seouluniv1010.json';
-import seouluniv from '../data/seouluniv10104326.json';
-import seouluniv_1m from '../data/seouluniv1mpolygon.json';
-import seouluniv_robot from '../data/seouluniv1mrobot.json';
+import ddmgrids from '../data/ddmgrids.json'; // 100m grid
+import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
+// import seouluniv_1m from '../data/seouluniv1m.json'; // 1m grid
+import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
+import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
 import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
  
 export default function Map() { 
 
+  // zoom 레벨 출력 (current, max)
   function MapComponent() {
     // // zoom in-out 시에도 중심좌표 유지
     // const map = useMapEvent('zoom', () => {
     //   map.setView([37.58360620664327, 127.05843925233872]);
     // })
+
     const location = useMapEvent('click', () => {
-      if (location.getZoom() === 18) {
-        console.log('max zoom');
+      let currentZoom = location.getZoom();
+      if (location.getZoom() === location.getMaxZoom()) {
+        console.log('max zoom - ', currentZoom);
       }
-      console.log('current zoomlevel: ', location.getZoom());
+      console.log('current zoomlevel: ', currentZoom);
     })
     return null
   }
 
   const [data, setData] = useState(['']);
+  let [loading, setLoading] = useState(true);
 
-  const getClick = () => {
-    // axios.get('http://localhost:5000/geometry')
-    axios.get('http://59.6.99.141:7500/robot-location')
-      .then(res => setData(res.data))
-  }
+  useEffect(() => {
+    axios
+      .get('http://59.6.99.141:7500/robot-location')
+      .then(res => {
+        setData(res.data); 
+        setLoading(false);
+      })
+      .catch(err =>{
+        console.log('Error');
+      })
+  }, []);
 
   console.log();
 
@@ -76,7 +86,6 @@ export default function Map() {
   // 체크박스로 차량 선택 후 해당 인덱스를 checkedCars 배열로 전달한다고 가정
 
   values = {}; // 함수 안에 들어가면 const로 바꾸기
-  // console.log(values);
 
   const checkedCars = [0, 1, 2];
 
@@ -166,7 +175,44 @@ export default function Map() {
     }
   }
 
-  // grid - id popup
+  // 1m grid
+  const gridStyle3 = (feature) => {
+    const confirmed = feature.properties.robot_id;
+    // const confirmed = testValues[feature.properties.id];
+
+    if (!confirmed) {
+        return {
+        color: 'white', // stroke color
+        weight: 1, // stroke width (default: 3)
+        opacity: 1, // stroke opacity (default: 1.0)
+        fillcolor: 'white',
+        fillOpacity: 0.4
+        }
+    } else if (confirmed === 1) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.2
+        }
+    } else if (confirmed === 2) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.4
+        }
+    } else if (confirmed === 3) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.6
+        }
+    }
+  }
+
+  // grid - id popup (10m)
   const onEachFeature = (feature, layer, e) => {
     let crosspoint = 0;
     let gid;
@@ -190,14 +236,25 @@ export default function Map() {
     );
   };
 
-  const onPolyLineClick = (polyline, layer) => {
-    console.log(polyline);
-  }
+  // grid - id popup (1m)
+  const onEachFeature2 = (feature, layer, e) => {
+    let crosspoint = 0;
+    const gid = feature.properties.polygon_id;
+
+    if (testValues[feature.properties.id] !== undefined){
+      // crosspoint = values[feature.properties.id];
+      // crosspoint = testValues[feature.properties.id];
+    }
+    layer.bindPopup(
+      '<div>gid: '+gid+'</div>'+
+      '<div>통행 차량 수: '+crosspoint+'</div>'
+    );
+  };
 
   const lineOptions = [
-    {color: 'black', fillColor: 'black', dashArray: 4, },
-    {color: 'red', fillColor: 'red', dashArray: 4, },
-    {color: 'orange', fillColor: 'orange', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
     {color: 'black', fillColor: 'black', dashArray: 4, },
     {color: 'blue', fillColor: 'blue', dashArray: 4, },
     {color: 'red', fillColor: 'red', dashArray: 4, }, 
@@ -208,7 +265,7 @@ export default function Map() {
   // add polylines from server
   const polylines = [];
 
-  // 잘못된 데이터 삭제
+  // 잘못된 데이터 삭제(제거)
   for (let i = 0; i < data.length; i++) {
     let temp = [];
     if (data[i].length < 100) {
@@ -222,6 +279,8 @@ export default function Map() {
       polylines[i] = temp;
     }
   }
+
+  console.log(polylines);
 
   return (
     <div className="w-full">
@@ -241,53 +300,48 @@ export default function Map() {
               maxZoom={30}
               maxNativeZoom={19}
             />
-            {
-              polylines.map((polyline, i) => (
-                <Polyline 
-                  key={i} 
-                  pathOptions={lineOptions[i]} 
-                  positions={polyline} 
-                  eventHandlers={onPolyLineClick(i)} 
-                  onMouseOver={e => e.target.openPopup()}
-                  onMouseOut={e => e.target.closePopup()}
-                >
-                <Popup>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 mb-1 mr-1 bg-red-600 border border-red-600 rounded-full"></div>
-                    <div className="mb-1 text-sm font-extrabold">
-                      R_221106
-                    </div>
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    2022.01.06.
-                  </div>
-                </Popup>
-                </Polyline>
-              ) )
-            }
-
-            <LayersControl>
+            <LayersControl collapsed={false}>
               <LayersControl.Overlay name="1m 격자">
                 <GeoJSON 
-                  data={seouluniv_1m} 
-                  // onEachFeature={onEachFeature}
+                  data={seouluniv_polygon} 
                   style={gridStyle2}
+                  onEachFeature={onEachFeature2}
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="10m 격자">
                 <GeoJSON 
-                  data={seouluniv} 
+                  data={seouluniv_10m} 
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
-              {/* <LayersControl.Overlay name="100m 격자">
-                <GeoJSON 
-                  data={ddmgrids} 
-                  onEachFeature={onEachFeature}
-                  style={gridStyle}
-                />
-              </LayersControl.Overlay> */}
+              <LayersControl.Overlay name="경로 표시">
+                <LayerGroup>
+                {
+                  polylines.map((polyline, i) => (
+                    <Polyline 
+                      key={i} 
+                      pathOptions={lineOptions[i]} 
+                      positions={polyline} 
+                      onMouseOver={e => e.target.openPopup()}
+                      onMouseOut={e => e.target.closePopup()}
+                    >
+                    <Popup>
+                      <div className="flex items-center">
+                        <div className={`w-2 h-2 mb-1 mr-1 bg-${lineOptions[i]['color']}-600 border border-${lineOptions[i]['color']}-600 rounded-full`}></div>
+                        <div className="mb-1 text-sm font-extrabold">
+                          Robot_{i+1}
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        2022.01.0{i+1}.
+                      </div>
+                    </Popup>
+                    </Polyline>
+                  ) )
+                }
+                </LayerGroup>
+              </LayersControl.Overlay>
               <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 {/* {data.map((v,i) => 
@@ -363,9 +417,11 @@ export default function Map() {
         <PathContainer />
       </div>
       <div>
-        <button onClick={getClick} className="hover:text-blue-600">Click</button>
+        {/* <button onClick={getClick} className="hover:text-blue-600">
+          Click to display Polylines
+        </button> */}
       </div>
-      {data.map((v,i) => 
+      {/* {data.map((v,i) => 
         v.map((w, j) => {
           return (
             <div key={j} className="flex text-sm border-b border-indigo-400">
@@ -375,7 +431,7 @@ export default function Map() {
             </div>
           )
         })
-      )}
+      )} */}
     </div>
   );
 }

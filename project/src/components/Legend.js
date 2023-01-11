@@ -11,8 +11,12 @@ export default function Legend ({ position }) {
 
   const legend = useMemo(
     () => (
-      <div className="w-32 h-40 px-4 py-2 bg-white">
-        <div className="flex justify-between my-3">
+      // delete bg-white
+      <div className="w-32 px-4 py-3">
+        <div className="flex justify-between mb-3">
+          <span>범례</span>
+        </div>
+        <div className="flex justify-between mb-3">
           <span className="w-5 h-5 bg-blue-300 border-2 border-blue-600"></span>
           <span>value: 1</span>
         </div>

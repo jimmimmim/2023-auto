@@ -5,11 +5,14 @@ import logos from '../assets/images/logos.png';
 const NavBar = () => {
     return (
     <>
-    <nav id="navbar" className='flex items-center justify-between font-semibold border-b' style={{backgroundColor: '#07111E'}}>
+    <nav id="navbar" className='flex items-center justify-between tracking-wide border-b' style={{backgroundColor: '#07111E'}}>
         <div className='gnb-box'>
             <ul id="links" className="flex">
                 <li className='mx-8 text-white uppercase'>
                     <Link to="/">Autonomous Robot Data Dashboard</Link>
+                </li>
+                <li className='mx-8 text-white uppercase'>
+                    <Link to="/temp">...temp</Link>
                 </li>
             </ul>
         </div>
