@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { 
   MapContainer, 
-  TileLayer, 
+  TileLayer,
+  SVGOverlay,
   GeoJSON, 
   Polyline,
   CircleMarker, 
@@ -17,11 +18,13 @@ import LocationFinderDummy from "../components/LocationFinderDummy";
 import Legend from "../components/Legend";
 
 import PathContainer from "../components/PathContainer";
+import Dashboard from "../components/Dashboard";
 
 import ddmgrids from '../data/ddmgrids.json'; // 100m grid
-import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
-// import seouluniv_1m from '../data/seouluniv1m.json'; // 1m grid
-import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
+// import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
+import seouluniv_10m from '../data/polygon10m_0112.json'; // 10m grid
+// import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
+import seouluniv_polygon from '../data/polygon1m_0112.json'; // 1m grid - polygon
 import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
 import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
@@ -140,8 +143,8 @@ export default function Map() {
 
   // 1m grid
   const gridStyle2 = (feature) => {
-    const confirmed = feature.properties.polygon_id;
-    // const confirmed = testValues[feature.properties.id];
+    // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
+    const confirmed = feature.properties.robot_id; // robot id가 존재하면 표시
 
     if (!confirmed) {
         return {
@@ -149,30 +152,44 @@ export default function Map() {
         weight: 1, // stroke width (default: 3)
         opacity: 1, // stroke opacity (default: 1.0)
         fillcolor: 'white',
-        fillOpacity: 0.4
+        fillOpacity: 0.1
         }
-    } else if (confirmed === 1) {
+    } else if (confirmed >= 2 && confirmed < 3) {
         return {
         weight: 1, // stroke width (default: 3)
         color: '#1871D9',
         fillcolor: '#1871D9', 
-        fillOpacity: 0.2
+        fillOpacity: 0.3
         }
-    } else if (confirmed === 2) {
+    } else if (confirmed >= 3 && confirmed < 5)  {
         return {
         weight: 1, // stroke width (default: 3)
         color: '#1871D9',
         fillcolor: '#1871D9', 
-        fillOpacity: 0.4
+        fillOpacity: 0.5
         }
-    } else if (confirmed === 3) {
+      } else if (confirmed >= 5 && confirmed < 7) {
         return {
         weight: 1, // stroke width (default: 3)
         color: '#1871D9',
         fillcolor: '#1871D9', 
-        fillOpacity: 0.6
+        fillOpacity: 0.7
         }
-    }
+      } else if (confirmed >= 7 && confirmed < 9) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 0.9
+        }
+      } else if (confirmed >= 9) {
+        return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9', 
+        fillOpacity: 1
+        }
+      }
   }
 
   // 1m grid
@@ -232,13 +249,13 @@ export default function Map() {
       '<div>'+feature.geometry.coordinates[0][0][1]+'</div>'+
       '<div>'+feature.geometry.coordinates[0][0][2]+'</div>'+
       '<div>'+feature.geometry.coordinates[0][0][3]+'</div>'+
-      '<div>통행 차량 수: '+crosspoint+'</div>'
+      '<div>통행량: '+crosspoint+'</div>'
     );
   };
 
   // grid - id popup (1m)
   const onEachFeature2 = (feature, layer, e) => {
-    let crosspoint = 0;
+    let crosspoint = feature.properties.robot_id;
     const gid = feature.properties.polygon_id;
 
     if (testValues[feature.properties.id] !== undefined){
@@ -247,11 +264,52 @@ export default function Map() {
     }
     layer.bindPopup(
       '<div>gid: '+gid+'</div>'+
-      '<div>통행 차량 수: '+crosspoint+'</div>'
+      '<div>통행량: '+crosspoint+'</div>'
     );
   };
 
   const lineOptions = [
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'red', fillColor: 'red', dashArray: 4, },
+    {color: 'purple', fillColor: 'purple', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'red', fillColor: 'red', dashArray: 4, },
+    {color: 'purple', fillColor: 'purple', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'red', fillColor: 'red', dashArray: 4, },
+    {color: 'purple', fillColor: 'purple', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'red', fillColor: 'red', dashArray: 4, },
+    {color: 'purple', fillColor: 'purple', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'red', fillColor: 'red', dashArray: 4, },
+    {color: 'purple', fillColor: 'purple', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
+    {color: 'green', fillColor: 'green', dashArray: 4, },
+    {color: 'blue', fillColor: 'blue', dashArray: 4, },
+    {color: 'gray', fillColor: 'gray', dashArray: 4, },
     {color: 'green', fillColor: 'green', dashArray: 4, },
     {color: 'blue', fillColor: 'blue', dashArray: 4, },
     {color: 'gray', fillColor: 'gray', dashArray: 4, },
@@ -268,7 +326,7 @@ export default function Map() {
   // 잘못된 데이터 삭제(제거)
   for (let i = 0; i < data.length; i++) {
     let temp = [];
-    if (data[i].length < 100) {
+    if (data[i].length < 800) {
       data.splice(i, 1);
       i--;
     } else {
@@ -300,6 +358,12 @@ export default function Map() {
               maxZoom={30}
               maxNativeZoom={19}
             />
+            <SVGOverlay attributes={{ stroke: 'red' }} bounds={[
+                [ 127.066548012935186, 37.577577904463759 ],
+                [ 127.066553626815875, 37.583884856635493 ],
+              ]}>
+              <rect x="0" y="0" width="100%" height="100%" fill="blue" />
+            </SVGOverlay>
             <LayersControl collapsed={false}>
               <LayersControl.Overlay name="1m 격자">
                 <GeoJSON 
@@ -311,11 +375,38 @@ export default function Map() {
               <LayersControl.Overlay name="10m 격자">
                 <GeoJSON 
                   data={seouluniv_10m} 
-                  onEachFeature={onEachFeature}
-                  style={gridStyle}
+                  onEachFeature={onEachFeature2}
+                  style={gridStyle2}
                 />
               </LayersControl.Overlay>
-              <LayersControl.Overlay name="경로 표시">
+              <LayersControl.Overlay name={"경로 표시"}>
+                {/* <LayerGroup> */}
+                {
+                  polylines.map((polyline, i) => (
+                    <Polyline 
+                      key={i} 
+                      pathOptions={lineOptions[i]} 
+                      positions={polyline} 
+                      onMouseOver={e => e.target.openPopup()}
+                      onMouseOut={e => e.target.closePopup()}
+                    >
+                    <Popup>
+                      <div className="flex items-center">
+                        <div className={`w-2 h-2 mb-1 mr-1 bg-${lineOptions[i]['color']}-600 border border-${lineOptions[i]['color']}-600 rounded-full`}></div>
+                        <div className="mb-1 text-sm font-extrabold">
+                          Robot_{i}
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        2022.01.0{i+1}.
+                      </div>
+                    </Popup>
+                    </Polyline>
+                  ))
+                }
+                {/* </LayerGroup> */}
+              </LayersControl.Overlay>
+              <LayersControl.Overlay name={"전체 경로 표시"}>
                 <LayerGroup>
                 {
                   polylines.map((polyline, i) => (
@@ -330,7 +421,7 @@ export default function Map() {
                       <div className="flex items-center">
                         <div className={`w-2 h-2 mb-1 mr-1 bg-${lineOptions[i]['color']}-600 border border-${lineOptions[i]['color']}-600 rounded-full`}></div>
                         <div className="mb-1 text-sm font-extrabold">
-                          Robot_{i+1}
+                          Robot_{i}
                         </div>
                       </div>
                       <div className="text-xs text-gray-400">
@@ -338,7 +429,7 @@ export default function Map() {
                       </div>
                     </Popup>
                     </Polyline>
-                  ) )
+                  ))
                 }
                 </LayerGroup>
               </LayersControl.Overlay>
@@ -411,10 +502,13 @@ export default function Map() {
               </LayerGroup>
               </LayersControl.Overlay>
             </LayersControl>
-            <Legend position="bottomright" />
+            {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
-        <PathContainer />
+        <div id='board' className="w-1/3 border-l-2 border-white" style={{background: '#07111E', minWidth: "250px"}}>
+          <Dashboard />
+          <PathContainer />
+        </div>
       </div>
       <div>
         {/* <button onClick={getClick} className="hover:text-blue-600">

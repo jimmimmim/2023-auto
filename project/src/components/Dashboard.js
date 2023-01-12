@@ -1,26 +1,21 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
+import Chart from 'react-apexcharts';
+
+import Chart01 from './Chart01';
 
 export default function Dashboard() {
+  
   return (
-    <div id='board' className="w-1/3 border-l-2 border-white" style={{backgroundColor: '#07111E'}}>
-      <div className="p-0 px-2 text-lg text-left border-white">
-        <div id='dashboard-upper' className='flex justify-around w-full py-4 h-80'>
-          <div className='bg-gray-800 w-72'></div>
-          <div className='bg-gray-800 w-72'></div>
+    <div className='flex'>
+        <div className="flex flex-col justify-center w-full text-lg text-left pt-7 pl-7">
+            <h1 className='px-4 py-3 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834"}}>평균 주행속도</h1>
+            <Chart01 />
         </div>
-        <div id='dashboard-bottom' className='grid grid-cols-2 grid-rows-4 mx-3 mt-2 gap-x-5 gap-y-5'>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-blue-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
-          <div className='flex items-center justify-center h-16 font-semibold text-center text-white bg-gray-800 cursor-pointer'>R_230106</div>
+        <div className="justify-center w-full text-lg text-left pt-7 pr-7">
+            <h1 className='px-4 py-3 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834"}}>인식 개체수 변화</h1>
+            <Chart01 />
         </div>
-      </div>
     </div>
+
   );
 }

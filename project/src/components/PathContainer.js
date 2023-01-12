@@ -8,18 +8,18 @@ export default function PathContainer() {
 
   // 샘플 데이터
   const [robots, setRobots] = useState([
-    {name: "R_aaa", date: "2022.01.01", checked: false },
-    {name: "R_bbb", date: "2022.02.02", checked: false },
-    {name: "R_ccc", date: "2022.03.03", checked: false },
-    {name: "R_ddd", date: "2022.04.04", checked: false },
-    {name: "R_eee", date: "2022.05.05", checked: false },
-    {name: "R_fff", date: "2022.06.06", checked: false },
-    {name: "R_ggg", date: "2022.07.07", checked: false },
-    {name: "R_hhh", date: "2022.08.08", checked: false },
-    {name: "R_iii", date: "2022.09.09", checked: false },
-    {name: "R_jjj", date: "2022.10.10", checked: false },
-    {name: "R_kkk", date: "2022.11.11", checked: false },
-    {name: "R_lll", date: "2022.12.12", checked: false },
+    {name: "Robot_1", date: "2022.01.01", checked: false },
+    {name: "Robot_2", date: "2022.02.02", checked: false },
+    {name: "Robot_3", date: "2022.03.03", checked: false },
+    {name: "Robot_4", date: "2022.04.04", checked: false },
+    {name: "Robot_5", date: "2022.05.05", checked: false },
+    {name: "Robot_6", date: "2022.06.06", checked: false },
+    {name: "Robot_7", date: "2022.07.07", checked: false },
+    {name: "Robot_8", date: "2022.08.08", checked: false },
+    {name: "Robot_9", date: "2022.09.09", checked: false },
+    {name: "Robot_10", date: "2022.10.10", checked: false },
+    {name: "Robot_11", date: "2022.11.11", checked: false },
+    {name: "Robot_12", date: "2022.12.12", checked: false },
   ]);
   
   const [selected, setSelected] = useState([]);
@@ -69,9 +69,9 @@ export default function PathContainer() {
   };
   
   return (
-    <div id='board' className="w-1/3 border-l-2 border-white" style={{background: '#07111E', minWidth: "250px"}}>
+    
       <div className="justify-center text-lg text-left border-white pt-7 px-7">
-        <h1 className='py-3 pl-4 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834"}}>Path Data History</h1>
+        <h1 className='py-3 pl-4 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834"}}>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-80' style={{backgroundColor: "#1F2834" }}>
             {
               robots.map((v, i) => (
@@ -91,6 +91,6 @@ export default function PathContainer() {
         }
         </div>
       </div>
-    </div>
+
   );
 }
