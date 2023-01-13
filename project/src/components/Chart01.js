@@ -14,6 +14,9 @@ class Chart01 extends Component {
             },
             plotOptions: {
                 pie: {
+                    startAngle: -90,
+                    endAngle: 90,
+                    offsetY: 10,
                     donut: {
                         labels: {
                             show: false,
@@ -22,11 +25,11 @@ class Chart01 extends Component {
                             },
                             value: {
                                 show: true
-                            }
+                            },
                         },
-                        size: '40%', // 구멍 크기
+                        size: '45%', // 구멍 크기
                     },
-                    expandOnClick: false
+                    expandOnClick: false,
                 }
             },
             dataLabels: {
@@ -42,6 +45,10 @@ class Chart01 extends Component {
                     height: 10,
                 }
             },
+            stroke: {
+                show: false,
+                width: 1,
+            },
             colors: ["#1871D9", "#2D4A65"],
             tooltip: {
                 shared: true,
@@ -49,13 +56,13 @@ class Chart01 extends Component {
                 y: {
                   formatter: function (y) {
                     if (typeof y !== "undefined") {
-                      return y.toFixed(0) + "가구";
+                      return y.toFixed(0) + "개";
                     }
                     return y;
                   }
                 }
             },
-            labels: ['단독주택', '아파트', '연립주택', '다세대 주택', '비주거용 건물 내 주택']
+            labels: ['장애물', '기타']
           },
           seriesDonut: [2253, 587],    
     };

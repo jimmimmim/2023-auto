@@ -8,20 +8,114 @@ export default function PathContainer() {
 
   // 샘플 데이터
   const [robots, setRobots] = useState([
-    {name: "Robot_1", date: "2022.01.01", checked: false },
-    {name: "Robot_2", date: "2022.02.02", checked: false },
-    {name: "Robot_3", date: "2022.03.03", checked: false },
-    {name: "Robot_4", date: "2022.04.04", checked: false },
-    {name: "Robot_5", date: "2022.05.05", checked: false },
-    {name: "Robot_6", date: "2022.06.06", checked: false },
-    {name: "Robot_7", date: "2022.07.07", checked: false },
-    {name: "Robot_8", date: "2022.08.08", checked: false },
-    {name: "Robot_9", date: "2022.09.09", checked: false },
-    {name: "Robot_10", date: "2022.10.10", checked: false },
-    {name: "Robot_11", date: "2022.11.11", checked: false },
-    {name: "Robot_12", date: "2022.12.12", checked: false },
-  ]);
-  
+    {
+        "name": "Robot_1",
+        "id": "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F",
+        "date": "2023/01/02",
+        "time": "11:27:20",
+        "checked": false
+    },
+    {
+        "name": "Robot_2",
+        "id": "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F",
+        "date": "2023/01/12",
+        "time": "14:53:07",
+        "checked": false
+    },
+    {
+        "name": "Robot_3",
+        "id": "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F",
+        "date": "2023/01/12",
+        "time": "15:14:11",
+        "checked": false
+    },
+    {
+        "name": "Robot_4",
+        "id": "30FB9002-DA29-4C12-9823-ABB57979F99C",
+        "date": "2023/01/02",
+        "time": "11:27:14",
+        "checked": false
+    },
+    {
+        "name": "Robot_5",
+        "id": "391A8DD1-B808-4C3A-BBD5-9A91538AAA8F",
+        "date": "2023/01/12",
+        "time": "14:16:44",
+        "checked": false
+    },
+    {
+        "name": "Robot_6",
+        "id": "391A8DD1-B808-4C3A-BBD5-9A91538AAA8F",
+        "date": "2023/01/12",
+        "time": "14:53:06",
+        "checked": false
+    },
+    {
+        "name": "Robot_7",
+        "id": "391A8DD1-B808-4C3A-BBD5-9A91538AAA8F",
+        "date": "2023/01/12",
+        "time": "15:12:54",
+        "checked": false
+    },
+    {
+        "name": "Robot_8",
+        "id": "81470D5A-BFC6-4F2D-AF62-E134CA9963C7",
+        "date": "2023/01/02",
+        "time": "11:27:17",
+        "checked": false
+    },
+    {
+        "name": "Robot_9",
+        "id": "81470D5A-BFC6-4F2D-AF62-E134CA9963C7",
+        "date": "2023/01/12",
+        "time": "14:16:37",
+        "checked": false
+    },
+    {
+        "name": "Robot_10",
+        "id": "81470D5A-BFC6-4F2D-AF62-E134CA9963C7",
+        "date": "2023/01/12",
+        "time": "14:53:05",
+        "checked": false
+    },
+    {
+        "name": "Robot_11",
+        "id": "81470D5A-BFC6-4F2D-AF62-E134CA9963C7",
+        "date": "2023/01/12",
+        "time": "15:12:52",
+        "checked": false
+    },
+    {
+        "name": "Robot_12",
+        "id": "8DFBFB25-C76B-4FCC-912E-593CA8AAB7E5",
+        "date": "2023/01/12",
+        "time": "14:53:06",
+        "checked": false
+    },
+    {
+        "name": "Robot_13",
+        "id": "8DFBFB25-C76B-4FCC-912E-593CA8AAB7E5",
+        "date": "2023/01/12",
+        "time": "15:13:12",
+        "checked": false
+    },
+    {
+        "name": "Robot_14",
+        "id": "F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F",
+        "date": "2023/01/12",
+        "time": "14:53:06",
+        "checked": false
+    },
+    {
+        "name": "Robot_15",
+        "id": "F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F",
+        "date": "2023/01/12",
+        "time": "15:12:55",
+        "checked": false
+    }
+]);
+
+  // const [robots, setRobots] = useState(props.data);
   const [selected, setSelected] = useState([]);
 
   let componentClass = "";

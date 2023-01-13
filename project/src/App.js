@@ -5,7 +5,7 @@ import { TransitionGroup, CSSTransition } from "react-transition-group";
 import NavBar from "./components/NavBar";
 
 import Map from "./pages/Map";
-import Calc from "./pages/Calc";
+// import Calc from "./pages/Calc";
 import NoPage from "./pages/NoPage";
 
 import './App.css';
@@ -21,7 +21,6 @@ function App() {
               <Route path="/" element={<NavBar />}>
                 <Route index element={<Map />} />
                 <Route path="map" element={<Map />} />
-                <Route path="temp" element={<Calc />} />
                 <Route path="*" element={<NoPage />} />
               </Route>
             </Routes>

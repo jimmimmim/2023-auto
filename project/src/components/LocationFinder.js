@@ -2,7 +2,7 @@ import  { useState } from 'react';
 import { useMapEvents } from 'react-leaflet';
 
 // return location at which the click occurred
-export default function LocationFinderDummy() {
+export default function LocationFinder() {
 
     const [location, setLocation] = useState('');
 

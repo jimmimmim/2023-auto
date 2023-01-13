@@ -11,9 +11,9 @@ const NavBar = () => {
                 <li className='mx-8 text-white uppercase'>
                     <Link to="/">Autonomous Robot Data Dashboard</Link>
                 </li>
-                <li className='mx-8 uppercase hover:text-white'>
+                {/* <li className='mx-8 uppercase hover:text-white'>
                     <Link to="/temp">...temp</Link>
-                </li>
+                </li> */}
             </ul>
         </div>
         <div className='py-1 mr-2 cursor-pointer '>
