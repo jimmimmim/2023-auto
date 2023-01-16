@@ -284,6 +284,27 @@ export default function Map() {
     {color: '#288994', fillColor: '#288994', dashArray: 4, },
     {color: '#77C4D1', fillColor: '#77C4D1', dashArray: 4, },
     {color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
+    {color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
+    {color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
+    {color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
+    {color: '#23BFEC', fillColor: '#23BFEC', dashArray: 4, },
+    {color: '#84E756', fillColor: '#84E756', dashArray: 4, },
+    {color: '#48C637', fillColor: '#48C637', dashArray: 4, },
+    {color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
+    {color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
+    {color: '#FFF588', fillColor: '#FFF588', dashArray: 4, },
+    {color: '#25B0E9', fillColor: '#25B0E9', dashArray: 4, },
+    {color: '#99DD1C', fillColor: '#99DD1C', dashArray: 4, },
+    {color: '#F76301', fillColor: '#F76301', dashArray: 4, },
+    {color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
+    {color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
+    {color: '#620093', fillColor: '#620093', dashArray: 4, },
+    {color: '#000000', fillColor: '#000000', dashArray: 4, },
+    {color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
+    {color: '#E28869', fillColor: '#E28869', dashArray: 4, },
+    {color: '#288994', fillColor: '#288994', dashArray: 4, },
+    {color: '#77C4D1', fillColor: '#77C4D1', dashArray: 4, },
+    {color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
   ];
 
   // add polylines from server
@@ -357,8 +378,8 @@ export default function Map() {
           <MapContainer
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
-            scrollWheelZoom={false}
-            doubleClickZoom={false}
+            scrollWheelZoom={true}
+            doubleClickZoom={true}
             style={{ height: "100%", width: "100%"}}
           >
             <LocationFinder />
@@ -402,7 +423,7 @@ export default function Map() {
                     >
                     <Popup>
                       <div className="flex items-center">
-                        <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div>
+                        {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
                         <div className="mb-1 text-sm font-extrabold">
                           Robot_{i+1}
                         </div>
@@ -428,7 +449,7 @@ export default function Map() {
                     >
                     <Popup>
                       <div className="flex items-center">
-                        <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div>
+                        {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
                         <div className="mb-1 text-sm font-extrabold">
                           Robot_{i+1}
                         </div>
@@ -513,7 +534,7 @@ export default function Map() {
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
-        <div id='board' className="w-1/3 border-l-2 border-white bg-[#07111E] min-w-[260px]">
+        <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           <Dashboard />
           <PathContainer data={checkbox_info} />
         </div>

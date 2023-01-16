@@ -178,7 +178,7 @@ export default function PathContainer() {
   };
   
   return (
-      <div className="justify-center text-lg text-left border-white pt-7 px-7">
+      <div className="justify-center px-6 text-lg text-left pt-7">
         <h1 className='py-3 pl-4 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-80 bg-[#1F2834] min-w-[250px]'>
             {
@@ -192,7 +192,7 @@ export default function PathContainer() {
           selected.sort().map((v, i) => (
             <button 
             key={i} 
-            className={`px-3 py-1 mr-3 my-2 text-sm text-white border-white rounded-full bg-gray-700 hover:bg-gray-900 ${componentClass}`}
+            className={`px-3 py-1 mr-3 my-2 text-sm text-white rounded-full bg-gray-700 hover:bg-gray-900 ${componentClass}`}
             onClick={() => {uncheckItem(v)}}
             >{v}</button>
           ))
