@@ -5,7 +5,7 @@ export default function PathHistory({robot, handleChange}) {
   let componentClass = "";
 
   if (robot.checked) {
-    componentClass = "bg-gray-900"; // #2D4A65로 변경
+    componentClass = "bg-[#2D4A65]";
   }
 
   const ref = useRef(null);
@@ -22,7 +22,7 @@ export default function PathHistory({robot, handleChange}) {
     <>
     <div 
       className={`flex items-center justify-between px-4 py-2 
-      border-b border-gray-700 hover:bg-gray-900
+      border-b border-gray-700 hover:bg-[#2D4A65]
       ${componentClass}`}
       id='checkitem-container'
     >

@@ -8,13 +8,13 @@ export default function Dashboard() {
   
   return (
     <div className='flex px-6 pt-6'>
-      <div className="flex flex-col justify-start w-full mr-6 text-left h-72" style={{backgroundColor: "#1F2834", minWidth: '250px'}}>
+      <div className="flex flex-col justify-start w-full mr-6 text-left h-72 bg-[#1F2834] min-w-[250px]">
           <h1 className='px-4 py-3 text-lg tracking-wide text-white uppercase' >평균 주행속도</h1>
           <p className='mt-4 text-center text-white'>12km/h</p>
           <Chart01 />
-          <p className='text-center text-white border border-[#4b8b3b]'>법정최대시속 20km/h</p>
+          <p className='text-center text-white'>법정최대시속 20km/h</p>
       </div>
-      <div className="justify-start w-full text-lg text-left" style={{backgroundColor: "#1F2834", minWidth: '200px'}}>
+      <div className="justify-start w-full text-lg text-left bg-[#1F2834] min-w-[200px]">
           <h1 className='px-4 py-3 tracking-wide text-white uppercase'>인식 개체수 변화</h1>
           <Chart02 />
       </div>
