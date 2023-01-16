@@ -70,10 +70,10 @@ class Chart01 extends Component {
 
   render() {
     return (
-        <div className="pb-3 text-white" style={{backgroundColor: "#1F2834"}}>
+        <div className="text-white border-white" style={{height: '150px'}}>
             <Chart
             options={this.state.optionsDonutChart}
-            height={this.height}
+            height='250px'
             series={this.state.seriesDonut}
             type="donut"
             width={this.width}

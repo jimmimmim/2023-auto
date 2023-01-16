@@ -357,7 +357,15 @@ export default function Map() {
     // console.log(date);
     // console.log(time);
 
-    phone_info['name'] = 'Robot_' + (i+1).toString();
+    let robot_index = '';
+    if (i < 9) {
+      robot_index = '0' + (i+1).toString();
+    } else {
+      robot_index = (i+1).toString();
+    }
+
+    phone_info['name'] = 'Robot_' + robot_index;
+    phone_info['original_id'] = phone_date[i];
     phone_info['id'] = phone;
     phone_info['date'] = date;
     phone_info['time'] = time;
@@ -424,11 +432,11 @@ export default function Map() {
                       <div className="flex items-center">
                         <div className={`w-2 h-2 mb-1 mr-1 bg-${lineOptions[i]['color']}-600 border border-${lineOptions[i]['color']}-600 rounded-full`}></div>
                         <div className="mb-1 text-sm font-extrabold">
-                          Robot_{i}
+                          Robot_{i+1}
                         </div>
                       </div>
                       <div className="text-xs text-gray-400">
-                        2022.01.0{i+1}.
+                        2022.1.{i+1}.
                       </div>
                     </Popup>
                     </Polyline>
@@ -436,10 +444,9 @@ export default function Map() {
                 }
                 </LayerGroup>
               </LayersControl.Overlay>
-              <LayersControl.Overlay name={"경로 표시"}>
-                {/* <LayerGroup> */}
-                {
-                  polylines.map((polyline, i) => (
+              {
+                polylines.map((polyline, i) => (
+                <LayersControl.Overlay name={'경로 ' + (i+1)}>
                     <Polyline 
                       key={i} 
                       pathOptions={lineOptions[i]} 
@@ -451,18 +458,17 @@ export default function Map() {
                       <div className="flex items-center">
                         <div className={`w-2 h-2 mb-1 mr-1 bg-${lineOptions[i]['color']}-600 border border-${lineOptions[i]['color']}-600 rounded-full`}></div>
                         <div className="mb-1 text-sm font-extrabold">
-                          Robot_{i}
+                          Robot_{i+1}
                         </div>
                       </div>
                       <div className="text-xs text-gray-400">
-                        2022.01.0{i+1}.
+                        2022.1.{i+1}.
                       </div>
                     </Popup>
                     </Polyline>
-                  ))
-                }
-                {/* </LayerGroup> */}
-              </LayersControl.Overlay>
+                </LayersControl.Overlay>
+                ))
+            }
               <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 {/* {data.map((v,i) => 
