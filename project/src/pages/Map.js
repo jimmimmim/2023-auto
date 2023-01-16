@@ -541,7 +541,7 @@ export default function Map() {
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
-        <div id='board' className="w-1/3 border-l-2 border-white" style={{background: '#07111E', minWidth: "250px"}}>
+        <div id='board' className="w-1/3 border-l-2 border-white" style={{background: '#07111E', minWidth: "260px"}}>
           <Dashboard />
           <PathContainer data={checkbox_info} />
         </div>

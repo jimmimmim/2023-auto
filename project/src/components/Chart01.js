@@ -51,6 +51,7 @@ class Chart01 extends Component {
             },
             colors: ["#1871D9", "#2D4A65"],
             tooltip: {
+                enabled: false,
                 shared: true,
                 intersect: false,
                 y: {

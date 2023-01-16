@@ -178,10 +178,9 @@ export default function PathContainer() {
   };
   
   return (
-    
       <div className="justify-center text-lg text-left border-white pt-7 px-7">
-        <h1 className='py-3 pl-4 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834"}}>경로 데이터</h1>
-        <div id='dashboard-upper' className='flex flex-col overflow-auto h-80' style={{backgroundColor: "#1F2834" }}>
+        <h1 className='py-3 pl-4 tracking-wide text-white uppercase ' style={{backgroundColor: "#1F2834", minWidth: '250px'}}>경로 데이터</h1>
+        <div id='dashboard-upper' className='flex flex-col overflow-auto h-80' style={{backgroundColor: "#1F2834" , minWidth: '250px'}}>
             {
               robots.map((v, i) => (
                 <PathHistory key={i} robot={v} handleChange={handleChange} />
