@@ -1,5 +1,4 @@
-import React, { useState, useRef } from 'react';
-import Chart from 'react-apexcharts';
+import React from 'react';
 
 import Chart01 from './Chart01';
 import Chart02 from './Chart02';

@@ -101,7 +101,7 @@ class Chart02 extends Component {
 
   render() {
     return (
-        <div className="text-black border-white" style={{height: '150px'}}>
+        <div className="text-black border-white">
             <Chart
             options={this.state.optionsBarChart}
             height='200px'
