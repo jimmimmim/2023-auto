@@ -1,19 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PathHistory from './PathHistory';
 
-export default function PathContainer({data, polylines}) {
-  console.log(polylines)
+export default function PathContainer({data, selectedRobots}) {
 
-  // const robots = [['R_111', '2022.01.01.', '장애물1'], ['R_222', '2022.02.02.', '장애물2'], ['R_333', '2022.03.03', '장애물3']];
-  console.log(data);
+  // console.log(data);
   const [robots, setRobots] = useState(data); 
-  console.log(robots);
- // data : [] => [진짜 데이터]
+  // console.log(robots);
+  
   useEffect(() => {
     setRobots(data);
   }, [data])
-  // 샘플 데이터
+// 샘플 데이터
 //   const [robots, setRobots] = useState([
 //     {
 //         "name": "Robot_01",
@@ -182,6 +180,9 @@ export default function PathContainer({data, polylines}) {
     });
     setRobots(modifiedRobots);
   };
+
+  
+  selectedRobots(selected);
   
   return (
       <div className="justify-center px-6 text-lg text-left pt-7">
@@ -189,17 +190,19 @@ export default function PathContainer({data, polylines}) {
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-80 bg-[#1F2834] min-w-[250px]'>
             {
               robots.map((v, i) => (
-                <PathHistory key={i} robot={v} handleChange={handleChange} />
+                <PathHistory key={i} robot={v} handleChange={handleChange} onClick={() => {uncheckItem(v);}}/>
               ))
             }
         </div>
         <div className='flex flex-wrap justify-start px-3 min-w-[260px] bg-[#1F2834]'>
         {
+          // 로봇 번호순 정렬
           selected.sort().map((v, i) => (
+          // selected.map((v, i) => (
             <button 
             key={i} 
             className={`px-3 py-1 mr-3 my-2 text-sm text-white rounded-full bg-gray-700 hover:bg-gray-900 ${componentClass}`}
-            onClick={() => {uncheckItem(v)}}
+            onClick={() => {uncheckItem(v);}}
             >{v}</button>
           ))
         }

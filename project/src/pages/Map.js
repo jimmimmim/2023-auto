@@ -32,7 +32,6 @@ import image2 from '../assets/images/image2.png';
  
 export default function Map() { 
   
-
   const [data, setData] = useState(['']);
   let [loading, setLoading] = useState(true);
 
@@ -44,7 +43,7 @@ export default function Map() {
         setLoading(false);
       })
       .catch(err =>{
-        console.log('Error');
+        console.log(err);
       })
   }, []);
 
@@ -326,17 +325,11 @@ export default function Map() {
     }
   }
 
-  console.log(polylines);
-  console.log(labeled_polylines);
-
   // 고유아이디+날짜+시각
   const phone_date = Object.keys(labeled_polylines);
-  console.log(phone_date);
 
   // pathcontainer > pathHistory 로 넘겨줄 배열 생성
   const checkbox_info = [];
-
-  // 내부 딕셔너리
   
   // 날짜, 시각 분리
   for (let i = 0; i < phone_date.length; i++) {
@@ -345,9 +338,6 @@ export default function Map() {
     const date_time = phone_date[i].slice(-19, phone_date[i].length);
     const date = date_time.split(' ')[0];
     const time = date_time.split(' ')[1];
-    // console.log(phone);
-    // console.log(date);
-    // console.log(time);
 
     let robot_index = '';
     if (i < 9) {
@@ -366,9 +356,36 @@ export default function Map() {
     checkbox_info.push(phone_info);
   }
 
-  console.log(checkbox_info);
-
+  // console.log(checkbox_info);
   // console.log(Object.keys(labeled_polylines)); 
+
+  // 수정
+  // let selectedPolylines = [];
+  
+  const [selectedPolylines, setSelectedPolylines] = useState(polylines);
+
+  // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴
+  const selectedRobots = selected => {
+    setSelectedPolylines(selected);
+    return selectedPolylines;
+  };
+
+  // console.log(polylines);
+  // console.log(checkbox_info);
+
+  // 최최종 폴리라인
+  const selected_polylines = [];
+
+  // robot name을 통해 original id를 찾아냄
+  for (let i = 0; i < selectedPolylines.length; i++) {
+    for (let j = 0; j < checkbox_info.length; j++) {
+      if (checkbox_info[j]['name'] === selectedPolylines[i]) {
+        // console.log(checkbox_info[j]['original_id']);
+        // console.log(labeled_polylines[checkbox_info[j]['original_id']]); // 선택된 original id에 해당되는 폴리라인 출력
+        selected_polylines[i] = labeled_polylines[checkbox_info[j]['original_id']];
+      }
+    }
+  }
 
   return (
     <div className="w-full">
@@ -436,31 +453,30 @@ export default function Map() {
                 }
                 </LayerGroup>
               </LayersControl.Overlay>
+              {/* 개별 경로 표시 - 토글에는 보이지 않음 */}
               {
-                polylines.map((polyline, i) => (
-                <LayersControl.Overlay name={'경로 ' + (i+1)}>
-                    <Polyline 
-                      key={i} 
-                      pathOptions={lineOptions[i]} 
-                      positions={polyline} 
-                      onMouseOver={e => e.target.openPopup()}
-                      onMouseOut={e => e.target.closePopup()}
-                    >
-                    <Popup>
-                      <div className="flex items-center">
-                        {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
-                        <div className="mb-1 text-sm font-extrabold">
-                          Robot_{i+1}
-                        </div>
+                selected_polylines.map((polyline, i) => (
+                  <Polyline 
+                    key={i} 
+                    pathOptions={lineOptions[i]} 
+                    positions={polyline} 
+                    onMouseOver={e => e.target.openPopup()}
+                    onMouseOut={e => e.target.closePopup()}
+                  >
+                  <Popup>
+                    <div className="flex items-center">
+                      {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
+                      <div className="mb-1 text-sm font-extrabold">
+                        Robot_{i+1}
                       </div>
-                      <div className="text-xs text-gray-400">
-                        2022.1.{i+1}.
-                      </div>
-                    </Popup>
-                    </Polyline>
-                </LayersControl.Overlay>
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      2022.1.{i+1}.
+                    </div>
+                  </Popup>
+                  </Polyline>
                 ))
-            }
+              }
               <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 {/* {data.map((v,i) => 
@@ -473,9 +489,9 @@ export default function Map() {
                     />
                   })
                 )} */}
-                <CircleMarker
-                  center={[37.5832868803, 127.0594854661]}
-                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}}
+                <CircleMarker 
+                  center={[37.5833905641, 127.0595627093]} 
+                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
@@ -484,7 +500,7 @@ export default function Map() {
                   }}
                 >
                   <Popup>
-                    사고 발생 지점 (3)
+                    사고 발생 지점 (1)
                     <img
                       src={image2}
                       alt={image2}
@@ -509,9 +525,9 @@ export default function Map() {
                     />  
                   </Popup>
                 </CircleMarker>
-                <CircleMarker 
-                  center={[37.5833905641, 127.0595627093]} 
-                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
+                <CircleMarker
+                  center={[37.5832868803, 127.0594854661]}
+                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}}
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
@@ -520,7 +536,7 @@ export default function Map() {
                   }}
                 >
                   <Popup>
-                    사고 발생 지점 (1)
+                    사고 발생 지점 (3)
                     <img
                       src={image2}
                       alt={image2}
@@ -535,7 +551,7 @@ export default function Map() {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           <Dashboard />
-          <PathContainer data={checkbox_info} />
+          <PathContainer data={checkbox_info} selectedRobots={selectedRobots} />
         </div>
       </div>
       <div>
