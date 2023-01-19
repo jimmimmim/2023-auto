@@ -12,9 +12,9 @@ export default function PathHistory({robot, handleChange}) {
 
   const handleClick = () => {
     if (ref.current.checked) {
-      console.log(robot.name, 'checked');
+      // console.log(robot.name, 'checked');
     } else {
-      console.log(robot.name, 'unchecked');
+      // console.log(robot.name, 'unchecked');
     }
   };
   
@@ -40,9 +40,9 @@ export default function PathHistory({robot, handleChange}) {
         checked={robot.checked}
         onChange={() => handleChange(robot.name)}
         onClick={e => { 
-          // e.stopPropagation(); 
-          handleClick(); 
-        } }
+          e.stopPropagation(); 
+          handleClick();
+        }}
       />
       {/* <span className='w-3 h-3 bg-transparent border border-gray-500 rounded-sm cursor-pointer custom-check'></span> */}
     </div>
