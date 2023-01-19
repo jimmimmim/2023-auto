@@ -26,10 +26,13 @@ import ddmgrids from '../data/ddmgrids.json'; // 100m grid
 import seouluniv_10m from '../data/polygon10m_0112.json'; // 10m grid
 // import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
 // import seouluniv_polygon from '../data/grid1m_large.json'; // 1m grid - polygon - too large - ERROR
-import seouluniv_polygon from '../data/polygon1m_0112.json'; // 1m grid - polygon - latest version
-import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
-import image1 from '../assets/images/image1.png';
-import image2 from '../assets/images/image2.png';
+// import seouluniv_polygon from '../data/1m_data_grid.json'; // 1m grid - polygon - summarized
+import seouluniv_polygon from '../data/polygon1m_0112.json'; // 1m grid - polygon - latest version ✅
+import seouluniv_polygon_3m from '../data/3m_data_grid.json'; // 3m grid - polygon - latest version ✅
+import seouluniv_polygon_5m from '../data/5m_data_grid.json'; // 5m grid - polygon - latest version ✅
+// import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
+// import image1 from '../assets/images/image1.png';
+// import image2 from '../assets/images/image2.png';
  
 export default function Map() { 
   
@@ -50,7 +53,7 @@ export default function Map() {
 
   console.log();
 
-  // 1m grid - valid value
+  // 10m grid - valid value
   const gridStyle = (feature) => {
     // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
     const confirmed = feature.properties.robot_id; // robot id가 존재하면 표시 (robot_id: value (통행량))
@@ -107,6 +110,30 @@ export default function Map() {
         }
       }
   }
+
+  // 1m grid - new file!
+  const gridStyle2 = (feature) => {
+    const confirmed = feature.geometry;
+
+    if (!confirmed) {
+      return {
+      color: '#1871D9', // stroke color
+      weight: 1, // stroke width (default: 3)
+      opacity: 1, // stroke opacity (default: 1.0)
+      fillcolor: '#1871D9',
+      fillOpacity: 0.1
+      }
+    } else if (confirmed) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.1
+      }
+    }
+  }
+
+  
 
   // grid - id popup (1m)
   const onEachFeature = (feature, layer, e) => {
@@ -268,8 +295,22 @@ export default function Map() {
               <LayersControl.Overlay name="1m 격자">
                 <GeoJSON 
                   data={seouluniv_polygon} 
-                  style={gridStyle}
                   onEachFeature={onEachFeature}
+                  style={gridStyle}
+                />
+              </LayersControl.Overlay>
+              <LayersControl.Overlay name="3m 격자">
+                <GeoJSON 
+                  data={seouluniv_polygon_3m} 
+                  onEachFeature={onEachFeature}
+                  style={gridStyle}
+                />
+              </LayersControl.Overlay>
+              <LayersControl.Overlay name="5m 격자">
+                <GeoJSON 
+                  data={seouluniv_polygon_5m} 
+                  onEachFeature={onEachFeature}
+                  style={gridStyle}
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="10m 격자">
@@ -278,33 +319,6 @@ export default function Map() {
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 />
-              </LayersControl.Overlay>
-              <LayersControl.Overlay name={"전체 경로 표시"}>
-                <LayerGroup>
-                {
-                  polylines.map((polyline, i) => (
-                    <Polyline 
-                      key={i} 
-                      pathOptions={lineOptions[i]} 
-                      positions={polyline} 
-                      onMouseOver={e => e.target.openPopup()}
-                      onMouseOut={e => e.target.closePopup()}
-                    >
-                    <Popup>
-                      <div className="flex items-center">
-                        {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
-                        <div className="mb-1 text-sm font-extrabold">
-                          Robot_{i+1}
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        2022.1.{i+1}.
-                      </div>
-                    </Popup>
-                    </Polyline>
-                  ))
-                }
-                </LayerGroup>
               </LayersControl.Overlay>
               {/* individually display selected polylines - hidden panel */}
               {
@@ -315,6 +329,7 @@ export default function Map() {
                     positions={polyline} 
                     onMouseOver={e => e.target.openPopup()}
                     onMouseOut={e => e.target.closePopup()}
+                    onClick={console.log(`${i+1} clicked`)}
                   >
                   <Popup>
                     <div className="flex items-center">
@@ -330,7 +345,7 @@ export default function Map() {
                   </Polyline>
                 ))
               }
-              <LayersControl.Overlay name="사고 발생 지점">
+              {/* <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 <CircleMarker 
                   center={[37.5833905641, 127.0595627093]} 
@@ -387,7 +402,7 @@ export default function Map() {
                   </Popup>
                 </CircleMarker>
               </LayerGroup>
-              </LayersControl.Overlay>
+              </LayersControl.Overlay> */}
             </LayersControl>
             {/* <Legend position="bottomright" /> */}
           </MapContainer>

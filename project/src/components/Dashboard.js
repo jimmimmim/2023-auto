@@ -8,7 +8,7 @@ export default function Dashboard() {
   let display = ['flex', 'hidden'];
   
   return (
-    <div className={`${display[0]} px-6`}>
+    <div className={`${display[0]} px-6 pb-6`}>
       <div className="flex flex-col justify-start w-full mr-6 text-left h-72 bg-[#1F2834] min-w-[250px]">
           <h1 className='px-4 py-3 text-lg tracking-wide text-white uppercase' >평균 주행속도</h1>
           <p className='mt-4 text-center text-white'>12km/h</p>

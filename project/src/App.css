@@ -73,6 +73,8 @@
   color: white;
   font-family: 'Pretendard-Regular';
   text-align: left;
+  padding: 13px;
+  border-radius: 0;
 }
 
 /* 범례 */

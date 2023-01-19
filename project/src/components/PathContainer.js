@@ -15,8 +15,8 @@ export default function PathContainer({data, selectedRobots}) {
   // selected robots
   const [selected, setSelected] = useState([]);
 
-  // change button background color by css class
-  let componentClass = "";
+  // change button background color by css class - button removed
+  // let componentClass = "";
 
   // remove items
   const removeItem = (name) => {
@@ -66,8 +66,8 @@ export default function PathContainer({data, selectedRobots}) {
   }, [selected])
   
   return (
-      <div className="justify-center px-6 text-lg text-left pt-7">
-        <h1 className='py-3 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
+      <div className="justify-center px-6 text-lg text-left">
+        <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-80 bg-[#1F2834] min-w-[250px]'>
             {
               robots && robots.map((v, i) => (
