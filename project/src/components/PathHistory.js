@@ -27,33 +27,36 @@ export default function PathHistory({robot, handleChange}) {
   return (
     <>
     <div 
-      className={`flex items-center cursor-pointer justify-between px-4 py-2 
-      border-b border-gray-700 hover:bg-gray-900
+      className={`flex items-center cursor-pointer justify-between hover:bg-gray-900 pl-6 pr-2
       ${componentClass}`}
       id='checkitem-container'
       onClick={() => handleChange(robot.name)}
     >
-      <div>
-        <span className='pr-2 text-white'>{robot.name}</span>
-        <span className='text-xs text-gray-500'>{robot.date}</span>
-      </div>
-      <div className='flex'>
-        {/* checkbox - displayed when item is checked */}
-        <input
-          type="checkbox"
-          className={`${checkboxStyle}`}
-          id={`check-${robot.name}`}
-          ref={ref}
-          name={robot.name}
-          checked={robot.checked}
-          onChange={() => handleChange(robot.name)}
-          onClick={e => { 
-            e.stopPropagation(); 
-            handleClick();
-          }}
-        />
-        {/* custom checkbox - displayed only when item is unchecked */}
-        <div className={`cursor-default hover:bg-black w-3 h-3 mt-[1px] ml-[1px] border border-[#727272] rounded-sm ${customcheckboxStyle}`}></div>
+      <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
+        <div className='flex items-center justify-between'>
+          <div>
+            <span className='pr-2 text-white'>{robot.name}</span>
+            <span className='text-xs text-gray-500'>{robot.date}</span>
+          </div>
+          <div className='flex'>
+            {/* checkbox - displayed when item is checked */}
+            <input
+              type="checkbox"
+              className={`${checkboxStyle}`}
+              id={`check-${robot.name}`}
+              ref={ref}
+              name={robot.name}
+              checked={robot.checked}
+              onChange={() => handleChange(robot.name)}
+              onClick={e => { 
+                e.stopPropagation(); 
+                handleClick();
+              }}
+            />
+        </div>
+          {/* custom checkbox - displayed only when item is unchecked */}
+          <div className={`cursor-default hover:bg-black w-3 h-3 mt-[1px] ml-[1px] border border-[#727272] rounded-sm ${customcheckboxStyle}`}></div>
+        </div>
       </div>
     </div>
     </>

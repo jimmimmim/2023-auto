@@ -67,7 +67,7 @@ export default function PathContainer({data, selectedRobots}) {
   
   return (
       <div className="justify-center px-6 text-lg text-left pt-7">
-        <h1 className='py-3 pl-4 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
+        <h1 className='py-3 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-80 bg-[#1F2834] min-w-[250px]'>
             {
               robots && robots.map((v, i) => (
@@ -75,9 +75,10 @@ export default function PathContainer({data, selectedRobots}) {
               ))
             }
         </div>
-        <div className='flex flex-wrap justify-start px-3 min-w-[260px] bg-[#1F2834]'>
+        {/* only for check selected list */}
+        {/* <div className='flex flex-wrap justify-start px-3 min-w-[260px] bg-[#1F2834]'>
         {
-          // 로봇 번호순 정렬
+          // sort by robot name
           selected.sort().map((v, i) => (
           // selected.map((v, i) => (
             <button 
@@ -87,7 +88,7 @@ export default function PathContainer({data, selectedRobots}) {
             >{v}</button>
           ))
         }
-        </div>
+        </div> */}
       </div>
 
   );
