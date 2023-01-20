@@ -28,8 +28,15 @@ import seouluniv_10m from '../data/polygon10m_0112.json'; // 10m grid
 // import seouluniv_polygon from '../data/grid1m_large.json'; // 1m grid - polygon - too large - ERROR
 // import seouluniv_polygon from '../data/1m_data_grid.json'; // 1m grid - polygon - summarized
 import seouluniv_polygon from '../data/polygon1m_0112.json'; // 1m grid - polygon - latest version ✅
-import seouluniv_polygon_3m from '../data/3m_data_grid.json'; // 3m grid - polygon - latest version ✅
-import seouluniv_polygon_5m from '../data/5m_data_grid.json'; // 5m grid - polygon - latest version ✅
+// import seouluniv_polygon_3m from '../data/3m_data_grid.json'; // 3m grid - polygon - latest version ✅
+// import seouluniv_polygon_5m from '../data/5m_data_grid.json'; // 5m grid - polygon - latest version ✅
+import seouluniv_polygon_3m from '../data/3m_geodata_grid.json'; // 3m grid - polygon - special id
+import seouluniv_polygon_5m from '../data/5m_geodata_grid.json'; // 5m grid - polygon - special id
+// import seouluniv_polygon_3m from '../data/3m_data_grid_summarized.json'; // 3m grid - polygon - summarized
+// import seouluniv_polygon_5m from '../data/5m_data_grid_summarized.json'; // 5m grid - polygon - summarized
+// import seouluniv_polygon_3m from '../data/3m_data_grid_sum_pretty.json'; // 3m grid - polygon - summarized & beautified
+// import seouluniv_polygon_5m from '../data/5m_data_grid_sum_pretty.json'; // 5m grid - polygon - summarized & beautified
+import { Layer } from "leaflet";
 // import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
 // import image1 from '../assets/images/image1.png';
 // import image2 from '../assets/images/image2.png';
@@ -74,44 +81,102 @@ export default function Map() {
       fillOpacity: 0.1
       }
     } else if (confirmed >= 2 && confirmed < 3) {
-        return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9', 
-        fillOpacity: 0.3
-        }
-    } else if (confirmed >= 3 && confirmed < 5)  {
-        return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9', 
-        fillOpacity: 0.5
-        }
-      } else if (confirmed >= 5 && confirmed < 7) {
-        return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9', 
-        fillOpacity: 0.7
-        }
-      } else if (confirmed >= 7 && confirmed < 9) {
-        return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9', 
-        fillOpacity: 0.9
-        }
-      } else if (confirmed >= 9) {
-        return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9', 
-        fillOpacity: 1
-        }
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.3
       }
+    } else if (confirmed >= 3 && confirmed < 5)  {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.5
+      }
+    } else if (confirmed >= 5 && confirmed < 7) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.7
+      }
+    } else if (confirmed >= 7 && confirmed < 9) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.9
+      }
+    } else if (confirmed >= 9) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 1
+      }
+    }
   }
 
-  // 1m grid - new file!
+  // 3m, 5m full grid - special id
+  const gridStyle3 = (feature) => {
+    // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
+    const confirmed = feature.properties.id; // robot id가 존재하면 표시 (robot_id: value (통행량))
+
+    if (!confirmed) {
+      return {
+      color: '#1871D9', // stroke color
+      weight: 1, // stroke width (default: 3)
+      opacity: 1, // stroke opacity (default: 1.0)
+      fillcolor: '#1871D9',
+      fillOpacity: 0.1
+      }
+    } else if (confirmed === 1) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.1
+      }
+    } else if (confirmed >= 2 && confirmed < 3) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.3
+      }
+    } else if (confirmed >= 3 && confirmed < 5)  {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.5
+      }
+    } else if (confirmed >= 5 && confirmed < 7) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.7
+      }
+    } else if (confirmed >= 7 && confirmed < 9) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 0.9
+      }
+    } else if (confirmed >= 9) {
+      return {
+      weight: 1, // stroke width (default: 3)
+      color: '#1871D9',
+      fillcolor: '#1871D9', 
+      fillOpacity: 1
+      }
+    }
+  }
+
+  // 1m, 3m, 5m grid - summarized version 💫
   const gridStyle2 = (feature) => {
     const confirmed = feature.geometry;
 
@@ -303,15 +368,17 @@ export default function Map() {
                 <GeoJSON 
                   data={seouluniv_polygon_3m} 
                   onEachFeature={onEachFeature}
-                  style={gridStyle}
+                  style={gridStyle3}
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
-                <GeoJSON 
-                  data={seouluniv_polygon_5m} 
-                  onEachFeature={onEachFeature}
-                  style={gridStyle}
-                />
+                <LayerGroup>
+                  <GeoJSON 
+                    data={seouluniv_polygon_5m} 
+                    onEachFeature={onEachFeature}
+                    style={gridStyle3}
+                  />
+                </LayerGroup>
               </LayersControl.Overlay>
               <LayersControl.Overlay name="10m 격자">
                 <GeoJSON 
@@ -329,7 +396,7 @@ export default function Map() {
                     positions={polyline} 
                     onMouseOver={e => e.target.openPopup()}
                     onMouseOut={e => e.target.closePopup()}
-                    onClick={console.log(`${i+1} clicked`)}
+                    onClick={console.log(`${i+1} clicked - polyline`)}
                   >
                   <Popup>
                     <div className="flex items-center">
