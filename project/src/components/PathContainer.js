@@ -10,7 +10,7 @@ export default function PathContainer({data, selectedRobots}) {
     if (robots.length === 0) {
       setRobots(data);
     }
-  })
+  }, [robots.length, data])
 
   // selected robots
   const [selected, setSelected] = useState([]);
