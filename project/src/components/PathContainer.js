@@ -27,7 +27,7 @@ export default function PathContainer({data, selectedRobots}) {
     );
   };
 
-  // uncheck
+  // uncheck - used only in buttons
   const uncheckItem = (name) => {
     const copyRobots = [...robots];
     const modifiedRobots = copyRobots.map(robot => {
