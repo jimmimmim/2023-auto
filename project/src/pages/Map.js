@@ -44,21 +44,23 @@ import { Layer } from "leaflet";
 export default function Map() { 
   
   const [data, setData] = useState(['']);
+  const [gridData, setGridData] = useState(['']);
   let [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get('http://59.6.99.141:7500/robot-location')
-      .then(res => {
-        setData(res.data); 
-        setLoading(false);
-      })
+    .all([ axios.get('http://59.6.99.141:7500/getGeoData/3'), axios.get('http://59.6.99.141:7500/robot-location')])
+      // .get('http://59.6.99.141:7500/robot-location')
+      .then(
+        axios.spread((res1, res2) => {
+          setGridData(res1.data);
+          setData(res2.data);
+        })
+      )
       .catch(err =>{
         console.log(err);
       })
   }, []);
-
-  console.log();
 
   // 10m grid - valid value
   const gridStyle = (feature) => {
@@ -176,9 +178,9 @@ export default function Map() {
     }
   }
 
-  // 1m, 3m, 5m grid - summarized version 💫
+  // 3m grid - api version 💫
   const gridStyle2 = (feature) => {
-    const confirmed = feature.geometry;
+    const confirmed = feature.properties.id;
 
     if (!confirmed) {
       return {
@@ -364,13 +366,17 @@ export default function Map() {
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
+              {console.log(gridData.features)}
+              {/* {gridData.features > 0 &&  */}
               <LayersControl.Overlay name="3m 격자">
                 <GeoJSON 
-                  data={seouluniv_polygon_3m} 
+                  // data={seouluniv_polygon_3m} 
+                  data={gridData} 
                   onEachFeature={onEachFeature}
                   style={gridStyle3}
                 />
               </LayersControl.Overlay>
+              {/* } */}
               <LayersControl.Overlay name="5m 격자">
                 <LayerGroup>
                   <GeoJSON 
@@ -387,31 +393,6 @@ export default function Map() {
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
-              {/* individually display selected polylines - hidden panel */}
-              {
-                selected_polylines.map((polyline, i) => (
-                  <Polyline 
-                    key={i} 
-                    pathOptions={lineOptions[i]} 
-                    positions={polyline} 
-                    onMouseOver={e => e.target.openPopup()}
-                    onMouseOut={e => e.target.closePopup()}
-                    onClick={console.log(`${i+1} clicked - polyline`)}
-                  >
-                  <Popup>
-                    <div className="flex items-center">
-                      {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
-                      <div className="mb-1 text-sm font-extrabold">
-                        Robot_{i+1}
-                      </div>
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      2022.1.{i+1}.
-                    </div>
-                  </Popup>
-                  </Polyline>
-                ))
-              }
               {/* <LayersControl.Overlay name="사고 발생 지점">
               <LayerGroup>
                 <CircleMarker 
@@ -471,6 +452,31 @@ export default function Map() {
               </LayerGroup>
               </LayersControl.Overlay> */}
             </LayersControl>
+            {/* individually display selected polylines - hidden panel */}
+            {
+              selected_polylines.map((polyline, i) => (
+                <Polyline 
+                  key={i} 
+                  pathOptions={lineOptions[i]} 
+                  positions={polyline} 
+                  onMouseOver={e => e.target.openPopup()}
+                  onMouseOut={e => e.target.closePopup()}
+                  onClick={console.log(`${i+1} clicked - polyline`)}
+                >
+                <Popup>
+                  <div className="flex items-center">
+                    {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
+                    <div className="mb-1 text-sm font-extrabold">
+                      Robot_{i+1}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    2022.1.{i+1}.
+                  </div>
+                </Popup>
+                </Polyline>
+              ))
+            }
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
