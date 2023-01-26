@@ -366,7 +366,6 @@ export default function Map() {
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
-              {console.log(gridData.features)}
               {/* {gridData.features > 0 &&  */}
               <LayersControl.Overlay name="3m 격자">
                 <GeoJSON 
