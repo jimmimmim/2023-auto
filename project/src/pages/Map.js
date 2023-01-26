@@ -49,7 +49,8 @@ export default function Map() {
 
   useEffect(() => {
     axios
-    .all([ axios.get('http://59.6.99.141:7500/getGeoData/3'), axios.get('http://59.6.99.141:7500/robot-location')])
+    // .all([ axios.get('http://59.6.99.141:7500/getGeoData/3'), axios.get('http://59.6.99.141:7500/robot-location')])
+    .all([ axios.get('/getGeoData/3'), axios.get('/robot-location')])
       // .get('http://59.6.99.141:7500/robot-location')
       .then(
         axios.spread((res1, res2) => {
