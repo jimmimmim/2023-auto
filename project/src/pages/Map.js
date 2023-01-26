@@ -335,6 +335,8 @@ export default function Map() {
     }
   }
 
+  console.log(gridData);
+
   return (
     <div className="w-full">
       <div className="flex">
@@ -367,16 +369,16 @@ export default function Map() {
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
-              {/* {gridData.features > 0 &&  */}
               <LayersControl.Overlay name="3m 격자">
+              {/* {gridData > 0 && */}
                 <GeoJSON 
-                  // data={seouluniv_polygon_3m} 
-                  data={gridData} 
+                  data={seouluniv_polygon_3m} 
+                  // data={gridData} 
                   onEachFeature={onEachFeature}
                   style={gridStyle3}
                 />
+              {/* }  */}
               </LayersControl.Overlay>
-              {/* } */}
               <LayersControl.Overlay name="5m 격자">
                 <LayerGroup>
                   <GeoJSON 
