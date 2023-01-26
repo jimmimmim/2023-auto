@@ -1,8 +1,0 @@
-{
-    "type": "FeatureCollection",
-    "name": "ddmgrids",
-    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-    "features": [
-    { "type": "Feature", "properties": { "gid": "다사609556", "lbl": "353.00", "val": 353.0, "layer": "dongdaemoon — nlsp_021001001", "path": "C:/Users/likec/OneDrive/바탕 화면/mygeodata/dongdaemoon.geojson" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 127.057058424168758, 37.59898242307964 ], [ 127.057053080701394, 37.599883747528601 ], [ 127.058185906360663, 37.599887993677804 ], [ 127.05819123616331, 37.598986669091524 ], [ 127.057058424168758, 37.59898242307964 ] ] ] ] } }
-]
-}    

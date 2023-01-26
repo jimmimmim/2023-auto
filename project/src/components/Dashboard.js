@@ -3,12 +3,13 @@ import React from 'react';
 import Chart01 from './Chart01';
 import Chart02 from './Chart02';
 
-export default function Dashboard() {
+export default function Dashboard({display}) {
 
-  let display = ['flex', 'hidden'];
+  // const display = ['flex', 'hidden'];
+  console.log('display: ', display);
   
   return (
-    <div className={`${display[0]} px-6 pb-6`}>
+    <div className={`${display} px-6 pb-6`}>
       <div className="flex flex-col justify-start w-full mr-6 text-left h-72 bg-[#1F2834] min-w-[250px]">
           <h1 className='px-4 py-3 text-lg tracking-wide text-white uppercase' >평균 주행속도</h1>
           <p className='mt-4 text-center text-white'>12km/h</p>
@@ -22,4 +23,8 @@ export default function Dashboard() {
     </div>
 
   );
+}
+
+Dashboard.defaultProps = {
+  display: 'flex'
 }
