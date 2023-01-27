@@ -16,7 +16,7 @@ export default function PathContainer({data, selectedRobots}) {
   const [selected, setSelected] = useState([]);
 
   // change button background color by css class - button removed
-  // let componentClass = "";
+  let componentClass = "";
 
   // remove items
   const removeItem = (name) => {
@@ -68,7 +68,7 @@ export default function PathContainer({data, selectedRobots}) {
   return (
       <div className="justify-center px-6 text-lg text-left">
         <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
-        <div id='dashboard-upper' className='flex flex-col overflow-auto h-80 bg-[#1F2834] min-w-[250px]'>
+        <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
             {
               robots && robots.map((v, i) => (
                 <PathHistory key={i} robot={v} handleChange={handleChange}/>
@@ -76,7 +76,7 @@ export default function PathContainer({data, selectedRobots}) {
             }
         </div>
         {/* only for check selected list */}
-        {/* <div className='flex flex-wrap justify-start px-3 min-w-[260px] bg-[#1F2834]'>
+        <div className='flex flex-wrap justify-start px-3 min-w-[260px] bg-[#1F2834]'>
         {
           // sort by robot name
           selected.sort().map((v, i) => (
@@ -88,7 +88,7 @@ export default function PathContainer({data, selectedRobots}) {
             >{v}</button>
           ))
         }
-        </div> */}
+        </div>
       </div>
 
   );

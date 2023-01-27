@@ -35,7 +35,8 @@ export default function PathHistory({robot, handleChange}) {
       <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
         <div className='flex items-center justify-between'>
           <div>
-            <span className='pr-2 text-white'>{robot.name}</span>
+            <span className='pr-2 text-white'>{robot.name.slice(6, 8 )} -</span>
+            <span className='pr-2 text-white'>{robot.original_id}</span>
             <span className='text-xs text-gray-500'>{robot.date}</span>
           </div>
           <div className='flex'>
@@ -45,6 +46,7 @@ export default function PathHistory({robot, handleChange}) {
               className={`${checkboxStyle}`}
               id={`check-${robot.name}`}
               ref={ref}
+              // name={robot.name}
               name={robot.name}
               checked={robot.checked}
               onChange={() => handleChange(robot.name)}
@@ -55,7 +57,7 @@ export default function PathHistory({robot, handleChange}) {
             />
         </div>
           {/* custom checkbox - displayed only when item is unchecked */}
-          <div className={`cursor-default hover:bg-black w-3 h-3 mt-[1px] ml-[1px] border border-[#727272] rounded-sm ${customcheckboxStyle}`}></div>
+          <div className={`cursor-default hover:bg-black w-3 min-w-[12px] min-h-[12px] h-3 mt-[1px] ml-[1px] border border-[#727272] rounded-sm ${customcheckboxStyle}`}></div>
         </div>
       </div>
     </div>
