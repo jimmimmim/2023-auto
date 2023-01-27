@@ -64,6 +64,8 @@ export default function PathContainer({data, selectedRobots}) {
   useEffect(() => {
     selectedRobots(selected);
   }, [selected])
+
+  console.log(selected);
   
   return (
       <div className="justify-center px-6 text-lg text-left">
