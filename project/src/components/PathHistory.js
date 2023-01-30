@@ -35,9 +35,10 @@ export default function PathHistory({robot, handleChange}) {
       <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
         <div className='flex items-center justify-between'>
           <div>
-            <span className='pr-2 text-white'>{robot.name.slice(6, 8 )} -</span>
-            <span className='pr-2 text-white'>{robot.original_id}</span>
-            <span className='text-xs text-gray-500'>{robot.date}</span>
+            {/* <span className='pr-2 text-white'>{robot.name.slice(6, 8 )} -</span> */}
+            {/* <span className='pr-2 text-white'>{robot.original_id}</span> */}
+            <span className='pr-2 text-white'>{robot.name}</span>
+            <span className='text-xs text-gray-500'>{robot.id}</span>
           </div>
           <div className='flex'>
             {/* checkbox - displayed when item is checked */}
