@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { 
   MapContainer, 
   TileLayer,
@@ -14,7 +14,6 @@ import {
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 
-// import PathContainer from "../components/PathContainer"; // previous version
 import PathContainer from "../components/PathContainer2"; 
 import Dashboard from "../components/Dashboard";
 
@@ -44,71 +43,9 @@ import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
  
 export default function Map() { 
-  
-  const [data, setData] = useState(['']); // individual polyline
-  const [gridData3m, setGridData3m] = useState(['']); // 3m grid
-  const [gridData5m, setGridData5m] = useState(['']); // 5m grid
-  const [robotids, setRobotIDs] = useState(['']); // orighinal robot id
 
-  let [loading, setLoading] = useState(true);
-  
-  // dashboard display (hidden)
-  const [display, setDisplay] = useState('');
-  
-  axios.defaults.withCredentials = true; 
-
-  // GET
-  useEffect(() => {
-    axios
-    .all([
-      axios.get('/getGeoData/3'), 
-      axios.get('/getGeoData/5'), 
-      axios.get('/robot-id')
-    ])
-    .then(
-      axios.spread((res3m, res5m, resid) => {
-        setGridData3m(res3m.data);
-        setGridData5m(res5m.data);
-        setRobotIDs(resid.data);
-        })
-      )
-      .catch(err =>{
-        console.log(err);
-      })
-  }, []);
-
-  let id = "81470D5A-BFC6-4F2D-AF62-E134CA9963C72023/01/02 11:27:17"
-  console.log('id: ', id);
-  // let id = robotids[0]
-  
-  // POST
-  // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
-  useEffect(() => {
-    
-    axios
-    .all([
-      axios.post("/robot-location", {
-        id: id
-      }),
-    ])
-    .then(
-      axios.spread((res) => {
-        setData(res.data);
-        })
-      )
-      .catch(err =>{
-        console.log(err);
-      })
-  }, [robotids]);
-
-
-  // 확인용
-  // console.log(data);
-  // console.log(gridData3m);
-  // console.log(gridData5m);
-  console.log('robotids: ', robotids);
-
-  
+    const pathContext = createContext();
+ 
   // 10m grid - valid value
   const gridStyle = (feature) => {
     // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
@@ -274,40 +211,24 @@ export default function Map() {
   const labeled_polylines = {}; // polyline 각각의 정보를 담을 객체
   const polylines = [];
 
-  // 잘못 측정된 데이터 삭제 (측정시간 800초 미만 데이터 제거)
-  for (let i = 0; i < data.length; i++) {
-    let temp = [];
-    if (data[i].length < 800) {
-      data.splice(i, 1);
-      i--;
-    } else {
-      for (let j = 0; j < data[i].length; j++) {
-        const arr = [data[i][j].lat, data[i][j].lon];
-        temp.push(arr);
-      }
-      polylines[i] = temp;
-      labeled_polylines[data[i][0].id] = polylines[i];
-    }
-  }
-
   // console.log(data);
 
 
   let gids = [];   // robots 배열의 내부 배열 담을 변수
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
 
-  // 지나가는 격자 아이디 배열 생성하기
-  // 3m, 5m 아이디 한번에 수집
-  for (let i = 0; i < data.length; i++) {
-    for (let j = 0; j < data[i].length; j++) {
-      gids.push(data[i][j]['id_3m']);
-      gids.push(data[i][j]['id_5m']);
-    }
-    // console.log(data[i].length);
-    gids = [...new Set(gids.sort())]; // 중복제거
-    // console.log(gids);
-    robots.push(gids);
-  }
+//   // 지나가는 격자 아이디 배열 생성하기
+//   // 3m, 5m 아이디 한번에 수집
+//   for (let i = 0; i < data.length; i++) {
+//     for (let j = 0; j < data[i].length; j++) {
+//       gids.push(data[i][j]['id_3m']);
+//       gids.push(data[i][j]['id_5m']);
+//     }
+//     // console.log(data[i].length);
+//     gids = [...new Set(gids.sort())]; // 중복제거
+//     // console.log(gids);
+//     robots.push(gids);
+//   }
 
   // console.log(robots);
   
@@ -454,25 +375,6 @@ else if (confirmed >= 80) {
     checkbox_info.push(phone_info);
   }
 
-  const robot_items = [];
-
-  for (let i = 0; i < robotids.length; i++) {
-    const robot_info = {};
-    
-    let robot_number = '';
-    if (i < 9) {
-      robot_number = '0' + (i+1).toString();
-    } else {
-      robot_number = (i+1).toString();
-    }
-
-    robot_info['name'] = 'Robot_' + robot_number;
-    robot_info['id'] = robotids[i];
-    robot_info['checked'] = false;
-
-    robot_items.push(robot_info);
-  }
-
   // console.log(Object.keys(labeled_polylines)); 
   
   const [selectedPolylines, setSelectedPolylines] = useState(polylines);
@@ -483,39 +385,42 @@ else if (confirmed >= 80) {
     return selected;
   };
 
-  // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
-  // const reequested_id = selected => {
-  //   // setSelectedPolylines(selected);
-  //   return selected;
-  // };
+  console.log('selectedPolylines: ', selectedPolylines);
+  // (ex) ['Robot_01', 'Robot_02', 'Robot_03', 'Robot_04', 'Robot_06', 'Robot_07', 'Robot_13', 'Robot_14', 'Robot_19']
+
+//   PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
+//   const robotItems = selected => {
+//     // setSelectedPolylines(selected);
+//     return selected;
+//   };
 
   // filtered polylines
   const selected_polylines = [];
 
-  // // get original_id by robot name
-  // for (let i = 0; i < selectedPolylines.length; i++) {
-  //   for (let j = 0; j < checkbox_info.length; j++) {
-  //     if (checkbox_info[j]['name'] === selectedPolylines[i]) {
-  //       // console.log(checkbox_info[j]['original_id']);
-  //       // console.log(labeled_polylines[checkbox_info[j]['original_id']]); // 선택된 original id에 해당되는 폴리라인 출력
-  //       selected_polylines[i] = labeled_polylines[checkbox_info[j]['original_id']];
-  //     }
-  //   }
-  // }
-
   // get original_id by robot name
-  for (let i = 0; i < selectedPolylines.length; i++) {
-    for (let j = 0; j < robot_items.length; j++) {
-      if (robot_items[j]['name'] === selectedPolylines[i]) {
-        // console.log(robot_items[j]['original_id']);
-        // console.log(labeled_polylines[robot_items[j]['original_id']]); // 선택된 original id에 해당되는 폴리라인 출력
-        // selected_polylines[i] = labeled_polylines[robot_items[j]['id']];
-        console.log(`robot_items[${j}]["id"]: `, robot_items[j]['id']);
-      }
-    }
-  }
+//   for (let i = 0; i < selectedPolylines.length; i++) {
+//     for (let j = 0; j < checkbox_info.length; j++) {
+//       if (checkbox_info[j]['name'] === selectedPolylines[i]) {
+//         // console.log(checkbox_info[j]['original_id']);
+//         // console.log(labeled_polylines[checkbox_info[j]['original_id']]); // 선택된 original id에 해당되는 폴리라인 출력
+//         selected_polylines[i] = labeled_polylines[checkbox_info[j]['original_id']];
+//       }
+//     }
+//   }
 
-  console.log('robot_items: ', robot_items);
+//   // get original_id by robot name
+//   for (let i = 0; i < selectedPolylines.length; i++) {
+//     for (let j = 0; j < robot_items.length; j++) {
+//       if (robot_items[j]['name'] === selectedPolylines[i]) {
+//         // console.log(robot_items[j]['original_id']);
+//         // console.log(labeled_polylines[robot_items[j]['original_id']]); // 선택된 original id에 해당되는 폴리라인 출력
+//         // selected_polylines[i] = labeled_polylines[robot_items[j]['id']];
+//         console.log(`robot_items[${j}]["id"]: `, robot_items[j]['id']);
+//       }
+//     }
+//   }
+
+//   console.log('robot_items: ', robot_items);
   // console.log(selected_polylines);
 
   // console.log(gridData);
@@ -585,7 +490,7 @@ else if (confirmed >= 80) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                      setDisplay('hidden');
+                    //   setDisplay('hidden');
                     }
                   }}
                   
@@ -604,7 +509,7 @@ else if (confirmed >= 80) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                      setDisplay('hidden');
+                    //   setDisplay('hidden');
                     }
                   }}
                 >
@@ -622,7 +527,7 @@ else if (confirmed >= 80) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                      setDisplay('hidden');
+                    //   setDisplay('hidden');
                     }
                   }}
                 >
@@ -671,9 +576,9 @@ else if (confirmed >= 80) {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-          {robot_items.length > 1 &&
-            <PathContainer data={robot_items} selectedRobots={selectedRobots}/>
-          }
+            {/* <pathContext.Provider value={{ value: "Hi :D" }}> */}
+                <PathContainer selectedRobots={selectedRobots}/>
+            {/* </pathContext.Provider> */}
         </div>
       </div>
     </div>

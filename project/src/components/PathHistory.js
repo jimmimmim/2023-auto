@@ -1,7 +1,31 @@
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 
 export default function PathHistory({robot, handleChange}) {
 
+  const [data, setData] = useState(['']); // individual polyline
+  const [id, setID] = useState('aaaaa');
+
+  // POST
+  // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
+  useEffect(() => {
+    if (id === 'aaaaa') {
+      axios
+      .all([
+        axios.post("/robot-location", {
+          id: id
+        }),
+      ])
+      .then(
+        axios.spread((res) => {
+          setData(res.data);
+          })
+        )
+        .catch(err =>{
+          console.log(err);
+        })
+    }
+  }, [id]);
   
   // CSS styles
   let componentClass = ""; // change div background color depend on robot.checked (boolean)
@@ -15,14 +39,34 @@ export default function PathHistory({robot, handleChange}) {
   }
 
   // check whether robot.checked is true or false
+  // api call here
   const ref = useRef(null);
   const handleClick = () => {
     if (ref.current.checked) {
-      // console.log(robot.name, 'checked');
+      console.log(robot.name, 'unchecked');
     } else {
-      // console.log(robot.name, 'unchecked');
+      console.log(robot.name, 'checked');
+      setID(robot.id);
     }
   };
+
+  
+  // console.log('data[0]: ', data[0]);
+  // extract lat and lon values from 'data'
+  let polyline = [] // 최종 배열 (경로아이디, 좌표배열)
+  let outer = [] // 선택한 차량의 경로 좌표를 담을 배열
+  for (let i = 0; i < data[0].length; i++){
+    let inner = []
+    // console.log(data[0][i])
+    inner.push(data[0][i]['lat'])
+    inner.push(data[0][i]['lon'])
+    outer.push(inner);
+  }
+
+  polyline.push(id);
+  polyline.push(outer);
+
+  console.log(polyline); 
   
   return (
     <>
@@ -30,7 +74,7 @@ export default function PathHistory({robot, handleChange}) {
       className={`flex items-center cursor-pointer justify-between hover:bg-gray-900 pl-6 pr-2
       ${componentClass}`}
       id='checkitem-container'
-      onClick={() => handleChange(robot.name)}
+      onClick={() => {handleChange(robot.name); handleClick();}}
     >
       <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
         <div className='flex items-center justify-between'>
@@ -53,7 +97,7 @@ export default function PathHistory({robot, handleChange}) {
               onChange={() => handleChange(robot.name)}
               onClick={e => { 
                 e.stopPropagation(); 
-                handleClick();
+                // handleClick();
               }}
             />
         </div>
