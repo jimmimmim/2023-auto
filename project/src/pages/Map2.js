@@ -14,7 +14,7 @@ import {
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 
-import PathContainer from "../components/PathContainer2"; 
+import PathContainer from "../components/PathContainer3"; 
 import Dashboard from "../components/Dashboard";
 
 import LocationFinder from "../components/LocationFinder";
@@ -334,7 +334,7 @@ else if (confirmed >= 80) {
   };
 
   console.log('selectedCars: ', selectedCars);
-  console.log('selectedPolylines: ', selectedPolyline);
+  console.log('selectedPolyline: ', selectedPolyline);
   // (ex) ['Robot_01', 'Robot_02', 'Robot_03', 'Robot_04', 'Robot_06', 'Robot_07', 'Robot_13', 'Robot_14', 'Robot_19']
 
 //   PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)

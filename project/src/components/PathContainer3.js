@@ -6,11 +6,17 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
 
   const robot_items = []; // 체크박스 배열 초기화 (생성 시에만 필요, checked 값 모두 false) ['']일 경우 경로 출력안됨
   const [robots, setRobots] = useState(robot_items); 
-  const [data, setData] = useState(['']); // individual polyline
+  const [data, setData] = useState({}); // individual polyline
   const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
-  const [id, setID] = useState(''); // current id
-  const [final, setFinal] = useState(''); // current id's final data
+  const [id, setID] = useState('F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55');
+//   let id = 'F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55';
+
+  // selected robots
+  const [selected, setSelected] = useState([]);
+
+  // selected data
+  const [selectedData, setSelectedData] = useState({});
 
   axios.defaults.withCredentials = true; 
 
@@ -49,23 +55,9 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
       })
   }, [id]);
 
-  let outer = [];
-  for (let i = 0; i < data[0].length; i++) {
-    let inner = [];
-    inner.push(data[0][i]['lat']);
-    inner.push(data[0][i]['lon']);
-    outer.push(inner);
-  }
+  console.log('data[0]: ', data[0]);
 
-  useEffect(() => {
-    setFinal(outer);
-  }, [])
-
-  console.log('id: ', id, '\n\nfinal: ', final);
-
-  // selected lines
-  const [selectedPolyline, setSelectedPolyline] = useState({});
-
+  // 로봇 이름 부여
   for (let i = 0; i < robotids.length; i++) {
     const robot_info = {};
     
@@ -83,44 +75,33 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
     robot_items.push(robot_info);
   }
 
-  console.log('robot_items: ', robot_items);
-
   useEffect(() => {
     if (robots.length === 1){
       setRobots(robot_items);
     }
   }, [robot_items])
 
-  console.log(`robotids: `, robotids);
-  // "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F2023/01/02 11:02:11"
-
-  console.log('robots: ', robots);
-  // {name: 'Robot_01', id: '2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F2023/01/02 11:02:11', checked: true}
-
-  // selected robots
-  const [selected, setSelected] = useState([]);
-
 
   // change button background color by css class - button removed
   let componentClass = "";
 
   // remove items
-  const removeItem = (name) => {
+  const removeItem = (id) => {
     setSelected(current =>
       current.filter(element => {
-        return element !== name;
+        return element !== id;
       }),
     );
   };
 
   // uncheck - used only in buttons
-  const uncheckItem = (name) => {
+  const uncheckItem = (id) => {
     const copyRobots = [...robots];
     const modifiedRobots = copyRobots.map(robot => {
-      if (name === robot.name) {
+      if (id === robot.id) {
         robot.checked = !robot.checked;
         if (!robot.checked) {
-          removeItem(robot.name);
+          removeItem(robot.id);
         }
       }
       return robot;
@@ -130,15 +111,15 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
   
 
   // checkbox - 선택 및 해제
-  const handleChange = name => {
+  const handleChange = id => {
     const copyRobots = [...robots];
     const modifiedRobots = copyRobots.map(robot => {
-      if (name === robot.name) {
+      if (id === robot.id) {
         robot.checked = !robot.checked;
         if (robot.checked) {
-          setSelected([...new Set([...selected, robot.name])]); // 항목 추가
+          setSelected([...new Set([...selected, robot.id])]); // 항목 추가
         } else {
-          removeItem(robot.name); // 항목 삭제
+          removeItem(robot.id); // 항목 삭제
         }
       }
       return robot;
@@ -146,34 +127,34 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
     setRobots(modifiedRobots);
   };
 
-  for (let i = 0; i < robots.length; i++) {
-    for (let j = 0; j < selected.length; j++) {
-      if (robots[i]['name'] === selected[j]) {
-        selectedPolyline[robots[i]['id']] = final;
-      }
+    // send selected robot lists from PathContainer.js to Map.js
+    useEffect(() => {
+        selectedRobots(selected);
+    }, [selected])
+
+    // send selected path data from PathContainer.js to Map.js
+    useEffect(() => {
+        selectedPolylines(selectedData);
+    }, [selectedData])
+
+    // 선택된 개별 차량(로봇) 아이디를 읽어옴
+    const selectedID = selected => {
+        setID(selected);
+        return selected;
+    };
+
+
+    // const selectedData = {}
+    for (let i = 0; i < selected.length; i++) {
+        if (data[0][0]) {
+            if (data[0][0]['id'] === selected[i]) {
+                selectedData[selected[i]] = data[0];
+            }
+        }
     }
-  }
 
-
-  // console.log('selectedPolyline: ', selectedPolyline)
-
-  // send selected robot lists from PathContainer.js to Map.js
-  useEffect(() => {
-    selectedRobots(selected);
-  }, [selected])
-
-  // send selected polyline lists from PathContainer.js to Map.js
-  useEffect(() => {
-    selectedPolylines(selectedPolyline);
-  }, [selected])
-
-  // console.log('selected: ', selected);
-
-  // 선택된 개별 차량(로봇) 아이디를 읽어옴
-  const selectedID = selected => {
-    setID(selected);
-    return selected;
-  };
+    console.log('selectedData: ', selectedData);
+  
   
   return (
       <div className="justify-center px-6 text-lg text-left">
