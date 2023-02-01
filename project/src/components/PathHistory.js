@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 export default function PathHistory({robot, handleChange, selectedID}) {
 
-  const [id, setID] = useState('');
+    const [id, setID] = useState('');
 
   // CSS styles
   let componentClass = ""; // change div background color depend on robot.checked (boolean)
@@ -16,23 +16,20 @@ export default function PathHistory({robot, handleChange, selectedID}) {
   }
 
   // check whether robot.checked is true or false
-  // api call here
   const ref = useRef(null);
   const handleClick = () => {
     if (ref.current.checked) {
-      console.log(robot.name, 'unchecked');
+    //   console.log(robot.id, 'unchecked');
     } else {
-      console.log(robot.name, 'checked');
-      setID(robot.id);
+    //   console.log(robot.id, 'checked');
+    setID(robot.id);
     }
   };
 
-  console.log('id: ', id);
-
-  // send selected robot id from PathHistory.js to PathContainer.js
-  useEffect(() => {
-    selectedID(id);
-  }, [id])
+    // send selected robot id from PathHistory.js to PathContainer.js
+    useEffect(() => {
+        selectedID(id);
+    }, [id])
   
   return (
     <>
@@ -40,7 +37,7 @@ export default function PathHistory({robot, handleChange, selectedID}) {
       className={`flex items-center cursor-pointer justify-between hover:bg-gray-900 pl-6 pr-2
       ${componentClass}`}
       id='checkitem-container'
-      onClick={() => {handleChange(robot.name); handleClick();}}
+      onClick={() => {handleChange(robot.id); handleClick();}}
     >
       <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
         <div className='flex items-center justify-between'>
@@ -55,12 +52,11 @@ export default function PathHistory({robot, handleChange, selectedID}) {
             <input
               type="checkbox"
               className={`${checkboxStyle}`}
-              id={`check-${robot.name}`}
+              id={`check-${robot.id}`}
               ref={ref}
-              // name={robot.name}
-              name={robot.name}
+              name={robot.id}
               checked={robot.checked}
-              onChange={() => handleChange(robot.name)}
+              onChange={() => handleChange(robot.id)}
               onClick={e => { 
                 e.stopPropagation(); 
                 // handleClick();

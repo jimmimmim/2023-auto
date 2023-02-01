@@ -4,8 +4,7 @@ import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import NavBar from "./components/NavBar";
 
-// import Map from "./pages/Map";
-import Map from "./pages/Map2";
+import Map from "./pages/Map";
 // import Calc from "./pages/Calc";
 import NoPage from "./pages/NoPage";
 
