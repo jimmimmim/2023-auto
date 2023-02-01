@@ -2,22 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PathHistory from './PathHistory';
 
-export default function PathContainer({selectedRobots}) {
+export default function PathContainer({selectedRobots, selectedPolylines}) {
 
   const robot_items = []; // 체크박스 배열 초기화 (생성 시에만 필요, checked 값 모두 false) ['']일 경우 경로 출력안됨
-
   const [robots, setRobots] = useState(robot_items); 
-
   const [data, setData] = useState(['']); // individual polyline
-  const [gridData3m, setGridData3m] = useState(['']); // 3m grid
-  const [gridData5m, setGridData5m] = useState(['']); // 5m grid
-  const [robotids, setRobotIDs] = useState(['']); // orighinal robot id
+  const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
-  let [loading, setLoading] = useState(true);
-  
-  // dashboard display (hidden)
-  const [display, setDisplay] = useState('');
-  
+  const [id, setID] = useState(''); // current id
+  const [final, setFinal] = useState(''); // current id's final data
+
   axios.defaults.withCredentials = true; 
 
   // GET
@@ -36,26 +30,41 @@ export default function PathContainer({selectedRobots}) {
       })
   }, []);
 
-  let id = "81470D5A-BFC6-4F2D-AF62-E134CA9963C72023/01/02 11:27:17"
-  
   // POST
   // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
-  // useEffect(() => {
-  //   axios
-  //   .all([
-  //     axios.post("/robot-location", {
-  //       id: id
-  //     }),
-  //   ])
-  //   .then(
-  //     axios.spread((res) => {
-  //       setData(res.data);
-  //       })
-  //     )
-  //     .catch(err =>{
-  //       console.log(err);
-  //     })
-  // }, [robotids]);
+  useEffect(() => {
+    axios
+    .all([
+      axios.post("/robot-location", {
+        id: id
+      }),
+    ])
+    .then(
+      axios.spread((res) => {
+        setData(res.data);
+        })
+      )
+      .catch(err =>{
+        console.log(err);
+      })
+  }, [id]);
+
+  let outer = [];
+  for (let i = 0; i < data[0].length; i++) {
+    let inner = [];
+    inner.push(data[0][i]['lat']);
+    inner.push(data[0][i]['lon']);
+    outer.push(inner);
+  }
+
+  useEffect(() => {
+    setFinal(outer);
+  }, [])
+
+  console.log('id: ', id, '\n\nfinal: ', final);
+
+  // selected lines
+  const [selectedPolyline, setSelectedPolyline] = useState({});
 
   for (let i = 0; i < robotids.length; i++) {
     const robot_info = {};
@@ -82,13 +91,15 @@ export default function PathContainer({selectedRobots}) {
     }
   }, [robot_items])
 
-  console.log(`data: `, data);
-  console.log(`id: ${id}`);
   console.log(`robotids: `, robotids);
+  // "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F2023/01/02 11:02:11"
+
   console.log('robots: ', robots);
+  // {name: 'Robot_01', id: '2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F2023/01/02 11:02:11', checked: true}
 
   // selected robots
   const [selected, setSelected] = useState([]);
+
 
   // change button background color by css class - button removed
   let componentClass = "";
@@ -135,12 +146,34 @@ export default function PathContainer({selectedRobots}) {
     setRobots(modifiedRobots);
   };
 
+  for (let i = 0; i < robots.length; i++) {
+    for (let j = 0; j < selected.length; j++) {
+      if (robots[i]['name'] === selected[j]) {
+        selectedPolyline[robots[i]['id']] = final;
+      }
+    }
+  }
+
+
+  // console.log('selectedPolyline: ', selectedPolyline)
+
   // send selected robot lists from PathContainer.js to Map.js
   useEffect(() => {
     selectedRobots(selected);
   }, [selected])
 
-  console.log('selected: ', selected);
+  // send selected polyline lists from PathContainer.js to Map.js
+  useEffect(() => {
+    selectedPolylines(selectedPolyline);
+  }, [selected])
+
+  // console.log('selected: ', selected);
+
+  // 선택된 개별 차량(로봇) 아이디를 읽어옴
+  const selectedID = selected => {
+    setID(selected);
+    return selected;
+  };
   
   return (
       <div className="justify-center px-6 text-lg text-left">
@@ -148,7 +181,7 @@ export default function PathContainer({selectedRobots}) {
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
             {
               robots && robots.map((v, i) => (
-                <PathHistory key={i} robot={v} handleChange={handleChange} polyLine={''}/>
+                <PathHistory key={i} robot={v} handleChange={handleChange} selectedID={selectedID}/>
               ))
             }
         </div>

@@ -1,32 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 
-export default function PathHistory({robot, handleChange}) {
+export default function PathHistory({robot, handleChange, selectedID}) {
 
-  const [data, setData] = useState(['']); // individual polyline
-  const [id, setID] = useState('aaaaa');
+  const [id, setID] = useState('');
 
-  // POST
-  // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
-  useEffect(() => {
-    if (id === 'aaaaa') {
-      axios
-      .all([
-        axios.post("/robot-location", {
-          id: id
-        }),
-      ])
-      .then(
-        axios.spread((res) => {
-          setData(res.data);
-          })
-        )
-        .catch(err =>{
-          console.log(err);
-        })
-    }
-  }, [id]);
-  
   // CSS styles
   let componentClass = ""; // change div background color depend on robot.checked (boolean)
   let checkboxStyle = ""; // custom checkbox
@@ -50,23 +27,12 @@ export default function PathHistory({robot, handleChange}) {
     }
   };
 
-  
-  // console.log('data[0]: ', data[0]);
-  // extract lat and lon values from 'data'
-  let polyline = [] // 최종 배열 (경로아이디, 좌표배열)
-  let outer = [] // 선택한 차량의 경로 좌표를 담을 배열
-  for (let i = 0; i < data[0].length; i++){
-    let inner = []
-    // console.log(data[0][i])
-    inner.push(data[0][i]['lat'])
-    inner.push(data[0][i]['lon'])
-    outer.push(inner);
-  }
+  console.log('id: ', id);
 
-  polyline.push(id);
-  polyline.push(outer);
-
-  console.log(polyline); 
+  // send selected robot id from PathHistory.js to PathContainer.js
+  useEffect(() => {
+    selectedID(id);
+  }, [id])
   
   return (
     <>
