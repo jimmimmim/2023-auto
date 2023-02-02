@@ -10,7 +10,6 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
   const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
   const [id, setID] = useState('F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55');
-//   let id = 'F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55';
 
   // selected robots
   const [selected, setSelected] = useState([]);
