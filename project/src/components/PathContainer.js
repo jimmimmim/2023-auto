@@ -128,28 +128,26 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
 
     // send selected robot lists from PathContainer.js to Map.js
     useEffect(() => {
-        selectedRobots(selected);
+      selectedRobots(selected);
     }, [selected])
 
     // send selected path data from PathContainer.js to Map.js
     useEffect(() => {
-        selectedPolylines(selectedData);
+      selectedPolylines(selectedData);
     }, [selectedData])
 
     // 선택된 개별 차량(로봇) 아이디를 읽어옴
     const selectedID = selected => {
-        setID(selected);
-        return selected;
+      setID(selected);
+      return selected;
     };
 
-
-    // const selectedData = {}
     for (let i = 0; i < selected.length; i++) {
-        if (data[0][0]) {
-            if (data[0][0]['id'] === selected[i]) {
-                selectedData[selected[i]] = data[0];
-            }
+      if (data[0][0]) {
+        if (data[0][0]['id'] === selected[i]) {
+          selectedData[selected[i]] = data[0];
         }
+      }
     }
 
   return (

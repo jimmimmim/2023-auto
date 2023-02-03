@@ -11,6 +11,8 @@ import {
   useMapEvent,
   Popup,
 } from 'react-leaflet';
+import axios from 'axios';
+
 import 'leaflet/dist/leaflet.css';
 
 import PathContainer from "../components/PathContainer"; 
@@ -42,6 +44,41 @@ import image2 from '../assets/images/image2.png';
 export default function Map() { 
 
   // const [values, setValues] = useState({});
+
+  // geojson 형식을 맞춰줌 - 유효한 격자 polygon만 features에 추가됨
+  const tempgrid = {
+    "type": "FeatureCollection",
+    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+    "features": []
+  };
+
+  const [grid3m, setGrid3m] = useState(tempgrid);
+  const [grid5m, setGrid5m] = useState(seouluniv_polygon_5m);
+
+  axios.defaults.withCredentials = true; 
+
+  // GET
+  useEffect(() => {
+    axios
+    .all([
+      axios.get('/getGeoData/3'),
+      axios.get('/getGeoData/5')
+    ])
+    .then(
+      axios.spread((res3, res5) => {
+        setGrid3m(res3.data);
+        setGrid5m(res5.data);
+        })
+      )
+      .catch(err =>{
+        console.log(err);
+      })
+  }, []);
+
+  console.log('grid3m: ', grid3m);
+  // console.log('seouluniv_polygon_3m: ', seouluniv_polygon_3m)
+  console.log('grid5m: ', grid5m);
+  // console.log('seouluniv_polygon_5m: ', seouluniv_polygon_5m)
  
   // 10m grid - valid value
   const gridStyle = (feature) => {
@@ -105,50 +142,23 @@ export default function Map() {
     {color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
     {color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
     {color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
-    {color: '#23BFEC', fillColor: '#23BFEC', dashArray: 4, },
-    {color: '#84E756', fillColor: '#84E756', dashArray: 4, },
-    {color: '#48C637', fillColor: '#48C637', dashArray: 4, },
-    {color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
-    {color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
-    {color: '#FFF588', fillColor: '#FFF588', dashArray: 4, },
-    {color: '#25B0E9', fillColor: '#25B0E9', dashArray: 4, },
-    {color: '#99DD1C', fillColor: '#99DD1C', dashArray: 4, },
-    {color: '#F76301', fillColor: '#F76301', dashArray: 4, },
-    {color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
-    {color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
-    {color: '#620093', fillColor: '#620093', dashArray: 4, },
-    {color: '#000000', fillColor: '#000000', dashArray: 4, },
     {color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
     {color: '#E28869', fillColor: '#E28869', dashArray: 4, },
     {color: '#288994', fillColor: '#288994', dashArray: 4, },
-    {color: '#77C4D1', fillColor: '#77C4D1', dashArray: 4, },
     {color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
-    {color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
-    {color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
-    {color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
-    {color: '#23BFEC', fillColor: '#23BFEC', dashArray: 4, },
-    {color: '#84E756', fillColor: '#84E756', dashArray: 4, },
-    {color: '#48C637', fillColor: '#48C637', dashArray: 4, },
-    {color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
-    {color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
-    {color: '#FFF588', fillColor: '#FFF588', dashArray: 4, },
-    {color: '#25B0E9', fillColor: '#25B0E9', dashArray: 4, },
-    {color: '#99DD1C', fillColor: '#99DD1C', dashArray: 4, },
-    {color: '#F76301', fillColor: '#F76301', dashArray: 4, },
     {color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
-    {color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
+    {color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
+    {color: '#F76301', fillColor: '#F76301', dashArray: 4, },
     {color: '#620093', fillColor: '#620093', dashArray: 4, },
+    {color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
+    {color: '#48C637', fillColor: '#48C637', dashArray: 4, },
+    {color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
     {color: '#000000', fillColor: '#000000', dashArray: 4, },
-    {color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
-    {color: '#E28869', fillColor: '#E28869', dashArray: 4, },
-    {color: '#288994', fillColor: '#288994', dashArray: 4, },
-    {color: '#77C4D1', fillColor: '#77C4D1', dashArray: 4, },
-    {color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
   ];
 
   // add polylines from server
   const labeled_polylines = {}; // polyline 각각의 정보를 담을 객체
-  const polylines = [];
+  // const polylines = [];
 
   // 고유아이디+날짜+시각
   const phone_date = Object.keys(labeled_polylines);
@@ -183,24 +193,25 @@ export default function Map() {
 
   // console.log(Object.keys(labeled_polylines)); 
   
-  const [selectedCars, setSelectedCars] = useState(polylines);
-  const [selectedPolyline, setSelectedPolyline] = useState(polylines);
+  const [selectedCars, setSelectedCars] = useState([]);
+  const [selectedPolyline, setSelectedPolyline] = useState([]);
 
+  
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedRobots = selected => {
     setSelectedCars(selected);
     return selected;
   };
-
+  
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedPolylines = selected => {
     setSelectedPolyline(selected);
     return selected;
   };
 
+
   console.log('selectedCars: ', selectedCars);
   console.log('selectedPolyline: ', selectedPolyline);
-  // (ex) ['Robot_01', 'Robot_02', 'Robot_03', 'Robot_04', 'Robot_06', 'Robot_07', 'Robot_13', 'Robot_14', 'Robot_19']
 
 //   PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
 //   const robotItems = selected => {
@@ -254,6 +265,32 @@ export default function Map() {
 
   console.log('robots: ', robots);
 
+  // 유효한 값이 있는 격자만 선택
+  let gid4grid = [] // 격자를 그리기 위한 배열 - robots 각 원소의 합집합
+  for (let i = 0; i < robots.length; i++) {
+    gid4grid = gid4grid.concat(robots[i]);
+  }
+  gid4grid = [...new Set(gid4grid.sort())]; // 3m, 5m 동시에 저장
+
+
+  let selected_grid = [] // 해당되는 격자만 추출
+  // 3m, 5m 격자별로 유효한 격자 아이디 추출
+  for (let i = 0; i < grid3m['features'].length; i++) {
+    for (let j = 0; j < gid4grid.length; j++) {
+      if (grid3m['features'][i]['properties']['id'] === gid4grid[j]) {
+        selected_grid.push(grid3m['features'][i]);
+      }
+    }
+  }
+
+  console.log('selected_grid: ', selected_grid);
+  tempgrid['features'] = selected_grid;
+  console.log('tempgrid: ', tempgrid);
+
+  const temptemp = [];
+  temptemp.push(tempgrid);
+  console.log('temptemp[0]: ', temptemp[0]);
+
   // (1) 아이디별 value 저장 - total
   for (let i = 0; i < robots.length; i++) {
     for (let j = 0; j < robots[i].length; j++) {
@@ -272,13 +309,13 @@ const onEachFeature = (feature, layer, e) => {
   let crosspoint = values[gid];
 
   layer.bindPopup(
-    '<div>gid: '+gid+'</div>'+
-    '<div>통행량: '+crosspoint+'</div>'
+    '<div>gid: '+gid+'</div>'
+    // '<div>통행량: '+crosspoint+'</div>'
   );
 };
 
 // gid 배열 전달되었을 때 격자에 통행량 표시하는 함수
-const gridStyle9 = (feature) => {
+const gridStyle35 = (feature) => {
   let gid = feature.properties.id;
   const confirmed = values[gid];
 
@@ -368,9 +405,6 @@ else if (confirmed === 10) {
 }
 }
 
-  
-
-
   return (
     <div className="w-full">
       <div className="flex">
@@ -398,21 +432,26 @@ else if (confirmed === 10) {
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="3m 격자">
-              {/* {gridData > 0 && */}
-                <GeoJSON 
-                  data={seouluniv_polygon_3m} 
-                  // data={gridData} 
-                  onEachFeature={onEachFeature}
-                  style={gridStyle9}
-                />
-              {/* }  */}
+              { 
+                temptemp.map((tempgrid, i) => (
+                  <GeoJSON 
+                    key={i}
+                    data={tempgrid} 
+                    // data={grid3m} 
+                    // data={gridData} 
+                    onEachFeature={onEachFeature}
+                    style={gridStyle35}
+                  />
+                ))
+              }
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
                 <LayerGroup>
                   <GeoJSON 
-                    data={seouluniv_polygon_5m} 
+                    data={grid5m} 
+                    // data={seouluniv_polygon_5m} 
                     onEachFeature={onEachFeature}
-                    style={gridStyle9}
+                    style={gridStyle35}
                   />
                 </LayerGroup>
               </LayersControl.Overlay>
@@ -489,6 +528,7 @@ else if (confirmed === 10) {
               selected_polylines.map((polyline, i) => (
                 <Polyline 
                   key={i} 
+                  // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정
                   pathOptions={lineOptions[polyline[0][0].toString()[9]]} 
                   positions={polyline} 
                   onMouseOver={e => e.target.openPopup()}
