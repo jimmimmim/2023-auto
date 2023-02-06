@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PathHistory from './PathHistory';
 
-export default function PathContainer({selectedRobots, selectedPolylines}) {
+export default function PathContainer({selectedRobots, selectedPolylines, display}) {
 
   const robot_items = []; // 체크박스 배열 초기화 (생성 시에만 필요, checked 값 모두 false) ['']일 경우 경로 출력안됨
   const [robots, setRobots] = useState(robot_items); 
   const [data, setData] = useState({}); // individual polyline
   const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
-  const [id, setID] = useState('F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55');
+  // const [id, setID] = useState('F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55');
+  const [id, setID] = useState('');
 
   // selected robots
   const [selected, setSelected] = useState([]);
-
+  
   // selected data
   const [selectedData, setSelectedData] = useState({});
 
@@ -54,7 +55,9 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
       })
   }, [id]);
 
-  console.log('data[0]: ', data[0]);
+  if (data[0]) {
+    console.log('data[0]: ', data[0]);
+  }
 
   // 로봇 이름 부여
   for (let i = 0; i < robotids.length; i++) {
@@ -79,6 +82,7 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
       setRobots(robot_items);
     }
   }, [robot_items])
+  // }, [])
 
 
   // change button background color by css class - button removed
@@ -126,36 +130,41 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
     setRobots(modifiedRobots);
   };
 
-    // send selected robot lists from PathContainer.js to Map.js
-    useEffect(() => {
-      selectedRobots(selected);
-    }, [selected])
+  // send selected robot lists from PathContainer.js to Map.js
+  useEffect(() => {
+    selectedRobots(selected);
+  }, [selected])
 
-    // send selected path data from PathContainer.js to Map.js
-    useEffect(() => {
-      selectedPolylines(selectedData);
-    }, [selectedData])
+  // const selectedData = {};
 
-    // 선택된 개별 차량(로봇) 아이디를 읽어옴
-    const selectedID = selected => {
-      setID(selected);
-      return selected;
-    };
-
-    for (let i = 0; i < selected.length; i++) {
-      if (data[0][0]) {
-        if (data[0][0]['id'] === selected[i]) {
-          selectedData[selected[i]] = data[0];
-        }
+  // filter selected polyline data (lat, lng)
+  for (let i = 0; i < selected.length; i++) {
+    if (data[0][0]) {
+      if (data[0][0]['id'] === selected[i]) {
+        selectedData[selected[i]] = data[0];
       }
     }
+  }
+  
+  // send selected path data from PathContainer.js to Map.js
+  useEffect(() => {
+    selectedPolylines(selectedData);
+  })
+
+  // 선택된 개별 차량(로봇) 아이디를 읽어옴
+  const selectedID = selected => {
+    setID(selected);
+    return selected;
+  };
+
+  console.log(selectedData);
 
   return (
       <div className="justify-center px-6 text-lg text-left">
         <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
             {
-              robots && robots.map((v, i) => (
+              robots.map((v, i) => (
                 <PathHistory key={i} robot={v} handleChange={handleChange} selectedID={selectedID}/>
               ))
             }
@@ -177,4 +186,8 @@ export default function PathContainer({selectedRobots, selectedPolylines}) {
       </div>
 
   );
+}
+
+PathContainer.defaultProps = {
+  display: ''
 }

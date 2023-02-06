@@ -17,12 +17,16 @@ import 'leaflet/dist/leaflet.css';
 
 import PathContainer from "../components/PathContainer"; 
 import Dashboard from "../components/Dashboard";
+import Barrier from "../components/Barrier";
 
 import LocationFinder from "../components/LocationFinder";
 import MapZoomComponent from '../components/MapZoomComponent';
 import Legend from "../components/Legend";
 
 // **** Files ***** 
+// import test from '../data/test.json';
+import temp3grid from '../data/temp3grid.json';
+import temp5grid from '../data/temp5grid.json';
 // import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
 import seouluniv_10m from '../data/polygon10m_0112.json'; // 10m grid
 // import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
@@ -52,8 +56,11 @@ export default function Map() {
     "features": []
   };
 
+  const [selectedCars, setSelectedCars] = useState([]);
+  const [selectedPolyline, setSelectedPolyline] = useState();
+
   const [grid3m, setGrid3m] = useState(tempgrid);
-  const [grid5m, setGrid5m] = useState(seouluniv_polygon_5m);
+  const [grid5m, setGrid5m] = useState(tempgrid);
 
   axios.defaults.withCredentials = true; 
 
@@ -193,10 +200,6 @@ export default function Map() {
 
   // console.log(Object.keys(labeled_polylines)); 
   
-  const [selectedCars, setSelectedCars] = useState([]);
-  const [selectedPolyline, setSelectedPolyline] = useState([]);
-
-  
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedRobots = selected => {
     setSelectedCars(selected);
@@ -209,20 +212,10 @@ export default function Map() {
     return selected;
   };
 
-
   console.log('selectedCars: ', selectedCars);
   console.log('selectedPolyline: ', selectedPolyline);
 
-//   PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
-//   const robotItems = selected => {
-//     // setSelectedPolylines(selected);
-//     return selected;
-//   };
-
-  // extract latlong
-  // console.log(Object.keys(selectedPolyline));
-
-  // filtered polylines
+  // filtered polylines (2차원 위경도 좌표)
   const selected_polylines = [];
 
   for (let i = 0; i < selectedCars.length; i++) {
@@ -238,6 +231,8 @@ export default function Map() {
   }
 
   console.log('selected_polylines: ', selected_polylines);
+
+  const [display, setDisplay] = useState('flex');
 
   const setDisplayFlex = () => {
     console.log('popup closed!!!!!!!!!!!!!');
@@ -282,6 +277,13 @@ export default function Map() {
       }
     }
   }
+  // for (let i = 0; i < grid5m['features'].length; i++) {
+  //   for (let j = 0; j < gid4grid.length; j++) {
+  //     if (grid5m['features'][i]['properties']['id'] === gid4grid[j]) {
+  //       selected_grid.push(grid5m['features'][i]);
+  //     }
+  //   }
+  // }
 
   console.log('selected_grid: ', selected_grid);
   tempgrid['features'] = selected_grid;
@@ -420,8 +422,8 @@ else if (confirmed === 10) {
             <MapZoomComponent />
             <TileLayer
               url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-              maxZoom={30}
-              maxNativeZoom={19}
+              maxZoom={30} // 20~30레벨은 19레벨 화질 그대로 화면만 zoom in
+              maxNativeZoom={19} // 실제로 확대되는 범위
             />
             <LayersControl collapsed={false}>
               <LayersControl.Overlay name="1m 격자">
@@ -432,23 +434,26 @@ else if (confirmed === 10) {
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="3m 격자">
-              { 
-                temptemp.map((tempgrid, i) => (
+              {/* { 
+                temptemp.length > 0 &&  temptemp.map((tempgrid, i) => ( */}
                   <GeoJSON 
-                    key={i}
-                    data={tempgrid} 
+                    data={temp3grid}
+                    // data={tempgrid}
+                    // data={seouluniv_polygon_3m} 
                     // data={grid3m} 
                     // data={gridData} 
                     onEachFeature={onEachFeature}
                     style={gridStyle35}
                   />
-                ))
-              }
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
+              {/* { 
+                temptemp.length > 0 &&  temptemp.map((tempgrid, i) => ( */}
                 <LayerGroup>
                   <GeoJSON 
-                    data={grid5m} 
+                    data={temp5grid} 
+                    // data={tempgrid} 
+                    // data={grid5m} 
                     // data={seouluniv_polygon_5m} 
                     onEachFeature={onEachFeature}
                     style={gridStyle35}
@@ -471,7 +476,7 @@ else if (confirmed === 10) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                    //   setDisplay('hidden');
+                      setDisplay('hidden');
                     }
                   }}
                   
@@ -490,7 +495,7 @@ else if (confirmed === 10) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                    //   setDisplay('hidden');
+                      setDisplay('hidden');
                     }
                   }}
                 >
@@ -508,7 +513,7 @@ else if (confirmed === 10) {
                   radius={5}
                   eventHandlers={{
                     click: (e) => {
-                    //   setDisplay('hidden');
+                      setDisplay('flex');
                     }
                   }}
                 >
@@ -558,7 +563,8 @@ else if (confirmed === 10) {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-            <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/>
+          {/* <Barrier display={display} /> */}
+          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/>
         </div>
       </div>
     </div>
