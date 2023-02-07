@@ -15,7 +15,7 @@ import axios from 'axios';
 
 import 'leaflet/dist/leaflet.css';
 
-import PathContainer from "../components/PathContainer"; 
+import PathContainer from "../components/PathContainer2"; 
 import Dashboard from "../components/Dashboard";
 import Barrier from "../components/Barrier";
 
@@ -25,10 +25,6 @@ import Legend from "../components/Legend";
 
 // **** Files ***** 
 // import test from '../data/test.json';
-import selectedjson from '../data/selected.json';
-// import selected0to12 from '../data/selected0to12.json';
-// import selected13to20 from '../data/selected13to20.json';
-// import selected21to29 from '../data/selected21to29.json';
 import temp3grid from '../data/temp3grid.json';
 import temp5grid from '../data/temp5grid.json';
 // import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
@@ -61,12 +57,10 @@ export default function Map() {
   };
 
   const [selectedCars, setSelectedCars] = useState([]);
-  const [selectedPolyline, setSelectedPolyline] = useState({});
+  const [selectedPolyline, setSelectedPolyline] = useState();
 
   const [grid3m, setGrid3m] = useState(tempgrid);
   const [grid5m, setGrid5m] = useState(tempgrid);
-
-  // const [selected_polylines, setSelected_polylines] = useState([]);
 
   axios.defaults.withCredentials = true; 
 
@@ -218,43 +212,27 @@ export default function Map() {
     return selected;
   };
 
-  // console.log(selectedjson);
-
   console.log('selectedCars: ', selectedCars);
   console.log('selectedPolyline: ', selectedPolyline);
 
   // filtered polylines (2차원 위경도 좌표)
   const selected_polylines = [];
 
-  // const [temp, setTemp] = useState([]);
-
-  // useEffect(() => {
-
-    // let arr = [];
-  
-    // selectedPolyline to selectedjson
-    for (let i = 0; i < selectedCars.length; i++) {
-  
-      let outer = [];
-      if (selectedjson[selectedCars[i]]) {
-        for (let j = 0; j < selectedjson[selectedCars[i]].length; j++){
-          let inner = [];
-          inner.push(selectedjson[selectedCars[i]][j]['lat'], selectedjson[selectedCars[i]][j]['lon']);
-          outer.push(inner);
-        }
-        selected_polylines.push(outer);
-      } 
-    }
-
-    // setTemp(arr);
-
-  // }, [selectedCars.length, selectedPolyline])
+//   for (let i = 0; i < selectedCars.length; i++) {
+//     let outer = [];
+//     if (selectedPolyline) {
+//         if (selectedPolyline[selectedCars[i]]) {
+//             for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++){
+//                 let inner = [];
+//                 inner.push(selectedPolyline[selectedCars[i]][j]['lat'], selectedPolyline[selectedCars[i]][j]['lon']);
+//                 outer.push(inner);
+//             }
+//             selected_polylines.push(outer);
+//         }
+//     }
+//   }
 
   console.log('selected_polylines: ', selected_polylines);
-
-  // let temppoly = [];
-  // temppoly.push(selected_polylines);
-  // console.log(temppoly);
 
   const [display, setDisplay] = useState('flex');
 
@@ -269,12 +247,14 @@ export default function Map() {
   // 3m, 5m, 10m 아이디 수집
   for (let i = 0; i < selectedCars.length; i++) {
     let gids = [];   // robots 배열의 내부 배열 담을 변수
-    if (selectedPolyline[selectedCars[i]]) {
-      for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++){
-        gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
-        gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
-        // gids.push(selectedPolyline[selectedCars[i]][j]['id_10m']);
-      }
+    if (selectedPolyline) {
+        if (selectedPolyline[selectedCars[i]]) {
+          for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++){
+            gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
+            gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
+            // gids.push(selectedPolyline[selectedCars[i]][j]['id_10m']);
+          }
+        }
     }
     gids = [...new Set(gids.sort())]; // 차량 내 격자아이디 중복 제거, 아이디순 정렬(편의상)
     // console.log(gids);
@@ -458,6 +438,8 @@ else if (confirmed === 10) {
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="3m 격자">
+              {/* { 
+                temptemp.length > 0 &&  temptemp.map((tempgrid, i) => ( */}
                   <GeoJSON 
                     data={temp3grid}
                     // data={tempgrid}
@@ -469,6 +451,8 @@ else if (confirmed === 10) {
                   />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
+              {/* { 
+                temptemp.length > 0 &&  temptemp.map((tempgrid, i) => ( */}
                 <LayerGroup>
                   <GeoJSON 
                     data={temp5grid} 
@@ -550,35 +534,34 @@ else if (confirmed === 10) {
             </LayersControl>
             {/* individually display selected polylines - hidden panel */}
             {
-                selected_polylines.length > 0 && 
-                selected_polylines.map((polyline, i) => (
-                  <Polyline 
-                    key={i} 
-                    // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정
-                    pathOptions={lineOptions[polyline[0][0].toString()[9]]} 
-                    // positions={polyline} 
-                    positions={polyline} 
-                    onMouseOver={e => e.target.openPopup()}
-                    onMouseOut={e => e.target.closePopup()}
-                    // onClick={console.log(`${i+1} clicked - polyline`)}
-                    eventHandlers={{
-                      mouseout: (e) => {
-                      }
-                    }}
-                  >
-                  <Popup closeButton={false}>
-                    <div className="flex items-center">
-                      {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
-                      <div className="mb-1 text-sm font-extrabold">
-                        Robot_{i+1}
-                      </div>
+              selected_polylines[0] > 0
+              && selected_polylines.map((polyline, i) => (
+                <Polyline 
+                  key={i} 
+                  // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정
+                  pathOptions={lineOptions[polyline[0][0].toString()[9]]} 
+                  positions={polyline} 
+                  onMouseOver={e => e.target.openPopup()}
+                  onMouseOut={e => e.target.closePopup()}
+                  // onClick={console.log(`${i+1} clicked - polyline`)}
+                  eventHandlers={{
+                    mouseout: (e) => {
+                    }
+                  }}
+                >
+                <Popup closeButton={false}>
+                  <div className="flex items-center">
+                    {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
+                    <div className="mb-1 text-sm font-extrabold">
+                      Robot_{i+1}
                     </div>
-                    <div className="text-xs text-gray-400">
-                      2022.1.{i+1}.
-                    </div>
-                  </Popup>
-                  </Polyline>
-                ))
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    2022.1.{i+1}.
+                  </div>
+                </Popup>
+                </Polyline>
+              ))
             }
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
