@@ -585,8 +585,8 @@ else if (confirmed === 10) {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-          {/* <Barrier display={display} /> */}
-          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/>
+          <Barrier display={display} />
+          {/* <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/> */}
         </div>
       </div>
     </div>

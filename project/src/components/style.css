@@ -1,0 +1,9 @@
+.img-slider-btn:checked + img {
+    border: 2px solid #FFFFFF;
+    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+.img-slider-btn:checked + span {
+    border: 2px solid #FFFFFF;
+    background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
