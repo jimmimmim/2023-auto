@@ -17,7 +17,7 @@ import 'leaflet/dist/leaflet.css';
 
 import PathContainer from "../components/PathContainer"; 
 import Dashboard from "../components/Dashboard";
-import Barrier from "../components/Barrier";
+import Carousel from "../components/Carousel";
 
 import LocationFinder from "../components/LocationFinder";
 import MapZoomComponent from '../components/MapZoomComponent';
@@ -585,7 +585,7 @@ else if (confirmed === 10) {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-          <Barrier display={display} />
+          <Carousel display={display} />
           {/* <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/> */}
         </div>
       </div>
