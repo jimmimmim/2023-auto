@@ -11,9 +11,9 @@ export default function MapZoomComponent() {
     const location = useMapEvent('click', () => {
         let currentZoom = location.getZoom();
         if (location.getZoom() === location.getMaxZoom()) {
-        console.log('max zoom - ', currentZoom);
+            console.log('max zoom - ', currentZoom);
         }
         console.log('current zoomlevel: ', currentZoom);
     })
-        return null;
+    return null;
 }

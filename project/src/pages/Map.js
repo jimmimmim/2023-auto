@@ -1,11 +1,11 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { 
-  MapContainer, 
+import {
+  MapContainer,
   TileLayer,
   SVGOverlay,
-  GeoJSON, 
+  GeoJSON,
   Polyline,
-  CircleMarker, 
+  CircleMarker,
   LayersControl,
   LayerGroup,
   useMapEvent,
@@ -15,7 +15,7 @@ import axios from 'axios';
 
 import 'leaflet/dist/leaflet.css';
 
-import PathContainer from "../components/PathContainer"; 
+import PathContainer from "../components/PathContainer";
 import Dashboard from "../components/Dashboard";
 import Carousel from "../components/Carousel";
 
@@ -48,8 +48,8 @@ import seouluniv_polygon_5m from '../data/5m_geodata_grid.json'; // 5m grid - po
 // import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
 import image1 from '../assets/images/image1.png';
 import image2 from '../assets/images/image2.png';
- 
-export default function Map() { 
+
+export default function Map() {
 
   // const [values, setValues] = useState({});
 
@@ -68,22 +68,22 @@ export default function Map() {
 
   // const [selected_polylines, setSelected_polylines] = useState([]);
 
-  axios.defaults.withCredentials = true; 
+  axios.defaults.withCredentials = true;
 
   // GET
   useEffect(() => {
     axios
-    .all([
-      axios.get('/getGeoData/3'),
-      axios.get('/getGeoData/5')
-    ])
-    .then(
-      axios.spread((res3, res5) => {
-        setGrid3m(res3.data);
-        setGrid5m(res5.data);
+      .all([
+        axios.get('/getGeoData/3'),
+        axios.get('/getGeoData/5')
+      ])
+      .then(
+        axios.spread((res3, res5) => {
+          setGrid3m(res3.data);
+          setGrid5m(res5.data);
         })
       )
-      .catch(err =>{
+      .catch(err => {
         console.log(err);
       })
   }, []);
@@ -92,7 +92,7 @@ export default function Map() {
   // console.log('seouluniv_polygon_3m: ', seouluniv_polygon_3m)
   console.log('grid5m: ', grid5m);
   // console.log('seouluniv_polygon_5m: ', seouluniv_polygon_5m)
- 
+
   // 10m grid - valid value
   const gridStyle = (feature) => {
     // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
@@ -100,73 +100,73 @@ export default function Map() {
 
     if (!confirmed) {
       return {
-      color: '#1871D9', // stroke color
-      weight: 1, // stroke width (default: 3)
-      opacity: 1, // stroke opacity (default: 1.0)
-      fillcolor: '#1871D9',
-      fillOpacity: 0.1
+        color: '#1871D9', // stroke color
+        weight: 1, // stroke width (default: 3)
+        opacity: 1, // stroke opacity (default: 1.0)
+        fillcolor: '#1871D9',
+        fillOpacity: 0.1
       }
     } else if (confirmed === 1) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.1
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.1
       }
     } else if (confirmed >= 2 && confirmed < 3) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.3
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.3
       }
-    } else if (confirmed >= 3 && confirmed < 5)  {
+    } else if (confirmed >= 3 && confirmed < 5) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.5
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.5
       }
     } else if (confirmed >= 5 && confirmed < 7) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.7
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.7
       }
     } else if (confirmed >= 7 && confirmed < 9) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.9
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.9
       }
     } else if (confirmed >= 9) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 1
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 1
       }
     }
   }
 
   const lineOptions = [
-    {color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
-    {color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
-    {color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
-    {color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
-    {color: '#E28869', fillColor: '#E28869', dashArray: 4, },
-    {color: '#288994', fillColor: '#288994', dashArray: 4, },
-    {color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
-    {color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
-    {color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
-    {color: '#F76301', fillColor: '#F76301', dashArray: 4, },
-    {color: '#620093', fillColor: '#620093', dashArray: 4, },
-    {color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
-    {color: '#48C637', fillColor: '#48C637', dashArray: 4, },
-    {color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
-    {color: '#000000', fillColor: '#000000', dashArray: 4, },
+    { weight: 3, color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
+    { weight: 3, color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
+    { weight: 3, color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
+    { weight: 3, color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
+    { weight: 3, color: '#E28869', fillColor: '#E28869', dashArray: 4, },
+    { weight: 3, color: '#288994', fillColor: '#288994', dashArray: 4, },
+    { weight: 3, color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
+    { weight: 3, color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
+    { weight: 3, color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
+    { weight: 3, color: '#F76301', fillColor: '#F76301', dashArray: 4, },
+    { weight: 3, color: '#620093', fillColor: '#620093', dashArray: 4, },
+    { weight: 3, color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
+    { weight: 3, color: '#48C637', fillColor: '#48C637', dashArray: 4, },
+    { weight: 3, color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
+    { weight: 3, color: '#000000', fillColor: '#000000', dashArray: 4, },
   ];
 
   // add polylines from server
@@ -178,7 +178,7 @@ export default function Map() {
 
   // pathcontainer > pathHistory 로 넘겨줄 배열 생성
   const checkbox_info = [];
-  
+
   // 날짜, 시각 분리
   for (let i = 0; i < phone_date.length; i++) {
     const phone_info = {};
@@ -189,9 +189,9 @@ export default function Map() {
 
     let robot_index = '';
     if (i < 9) {
-      robot_index = '0' + (i+1).toString();
+      robot_index = '0' + (i + 1).toString();
     } else {
-      robot_index = (i+1).toString();
+      robot_index = (i + 1).toString();
     }
 
     phone_info['name'] = 'Robot_' + robot_index;
@@ -205,13 +205,13 @@ export default function Map() {
   }
 
   // console.log(Object.keys(labeled_polylines)); 
-  
+
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedRobots = selected => {
     setSelectedCars(selected);
     return selected;
   };
-  
+
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedPolylines = selected => {
     setSelectedPolyline(selected);
@@ -226,37 +226,24 @@ export default function Map() {
   // filtered polylines (2차원 위경도 좌표)
   const selected_polylines = [];
 
-  // const [temp, setTemp] = useState([]);
+  // selectedPolyline to selectedjson
+  for (let i = 0; i < selectedCars.length; i++) {
 
-  // useEffect(() => {
-
-    // let arr = [];
-  
-    // selectedPolyline to selectedjson
-    for (let i = 0; i < selectedCars.length; i++) {
-  
-      let outer = [];
-      if (selectedjson[selectedCars[i]]) {
-        for (let j = 0; j < selectedjson[selectedCars[i]].length; j++){
-          let inner = [];
-          inner.push(selectedjson[selectedCars[i]][j]['lat'], selectedjson[selectedCars[i]][j]['lon']);
-          outer.push(inner);
-        }
-        selected_polylines.push(outer);
-      } 
+    let outer = [];
+    if (selectedjson[selectedCars[i]]) {
+      for (let j = 0; j < selectedjson[selectedCars[i]].length; j++) {
+        let inner = [];
+        inner.push(selectedjson[selectedCars[i]][j]['lat'], selectedjson[selectedCars[i]][j]['lon']);
+        outer.push(inner);
+      }
+      selected_polylines.push(outer);
     }
-
-    // setTemp(arr);
-
-  // }, [selectedCars.length, selectedPolyline])
+  }
 
   console.log('selected_polylines: ', selected_polylines);
 
-  // let temppoly = [];
-  // temppoly.push(selected_polylines);
-  // console.log(temppoly);
-
-  const [display, setDisplay] = useState('flex');
+  const [displayCarousel, setDisplayCarousel] = useState('hidden'); // 초기 화면 - 장애물 데이터 숨김
+  const [displayContainer, setDisplayContainer] = useState(''); // 초기 화면 - 경로 데이터 컨테이너 보여줌
 
   const setDisplayFlex = () => {
     console.log('popup closed!!!!!!!!!!!!!');
@@ -264,13 +251,13 @@ export default function Map() {
 
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
   let values = {}; // 격자 아이디별 통행량(지나가는 선 개수) 담을 딕셔너리
-  
+
   // 지나가는 격자 아이디 배열 생성하기
   // 3m, 5m, 10m 아이디 수집
   for (let i = 0; i < selectedCars.length; i++) {
     let gids = [];   // robots 배열의 내부 배열 담을 변수
     if (selectedPolyline[selectedCars[i]]) {
-      for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++){
+      for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++) {
         gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
         gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
         // gids.push(selectedPolyline[selectedCars[i]][j]['id_10m']);
@@ -327,121 +314,135 @@ export default function Map() {
 
   console.log('values: ', values); // gid별 통행량
 
-// 수정 필요
-// grid - id popup
-const onEachFeature = (feature, layer, e) => {
-  // let crosspoint = feature.properties.robot_id;
-  const gid = feature.properties.id;
-  let crosspoint = values[gid];
+  // 수정 필요
+  // grid - id popup
+  const onEachFeature = (feature, layer, e) => {
+    // let crosspoint = feature.properties.robot_id;
+    const gid = feature.properties.id;
+    let crosspoint = values[gid];
 
-  layer.bindPopup(
-    '<div>gid: '+gid+'</div>'
-    // '<div>통행량: '+crosspoint+'</div>'
-  );
-};
+    layer.bindPopup(
+      '<div>gid: ' + gid + '</div>'
+      // '<div>통행량: '+crosspoint+'</div>'
+    );
+  };
 
-// gid 배열 전달되었을 때 격자에 통행량 표시하는 함수
-const gridStyle35 = (feature) => {
-  let gid = feature.properties.id;
-  const confirmed = values[gid];
+  const highlightPath = (layer, e) => {
+    // let layer = e.target;
 
-  if (!confirmed) {
+    layer.setStyle({
+      weight: 5,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.7
+    });
+
+    layer.bringToFront();
+  }
+
+  // gid 배열 전달되었을 때 격자에 통행량 표시하는 함수
+  const gridStyle35 = (feature) => {
+    let gid = feature.properties.id;
+    const confirmed = values[gid];
+
+    if (!confirmed) {
       return {
-      color: '#1871D9', // stroke color
-      weight: 0, // stroke width (default: 3)
-      opacity: 1, // stroke opacity (default: 1.0)
-      fillcolor: 'white',
-      fillOpacity: 0
+        color: '#1871D9', // stroke color
+        weight: 0, // stroke width (default: 3)
+        opacity: 1, // stroke opacity (default: 1.0)
+        fillcolor: 'white',
+        fillOpacity: 0
       }
-  } else if (confirmed === 1) {
+    } else if (confirmed === 1) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.1
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.1
       }
-  } else if (confirmed === 2) {
+    } else if (confirmed === 2) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.3
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.3
       }
-  } else if (confirmed === 3) {
+    } else if (confirmed === 3) {
       return {
-      weight: 1, // stroke width (default: 3)
-      color: '#1871D9',
-      fillcolor: '#1871D9', 
-      fillOpacity: 0.5
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.5
       }
-  } else if (confirmed === 4) {
-    return {
-    weight: 1, // stroke width (default: 3)
-    color: '#1871D9',
-    fillcolor: '#1871D9', 
-    fillOpacity: 0.7
+    } else if (confirmed === 4) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.7
+      }
+    } else if (confirmed === 5) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1871D9',
+        fillcolor: '#1871D9',
+        fillOpacity: 0.9
+      }
     }
-} else if (confirmed === 5) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1871D9',
-  fillcolor: '#1871D9', 
-  fillOpacity: 0.9
+    else if (confirmed === 6) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1861d9',
+        fillcolor: '#1861d9',
+        fillOpacity: 0.7
+      }
+    }
+    else if (confirmed === 7) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1861d9',
+        fillcolor: '#1861d9',
+        fillOpacity: 0.7
+      }
+    }
+    else if (confirmed === 8) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1861d9',
+        fillcolor: '#1861d9',
+        fillOpacity: 0.8
+      }
+    }
+    else if (confirmed === 9) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1861d9',
+        fillcolor: '#1861d9',
+        fillOpacity: 0.8
+      }
+    }
+    else if (confirmed === 10) {
+      return {
+        weight: 1, // stroke width (default: 3)
+        color: '#1861d9',
+        fillcolor: '#1861d9',
+        fillOpacity: 0.9
+      }
+    }
   }
-}
-else if (confirmed === 6) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1861d9',
-  fillcolor: '#1861d9', 
-  fillOpacity: 0.7
-  }
-}
-else if (confirmed === 7) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1861d9',
-  fillcolor: '#1861d9', 
-  fillOpacity: 0.7
-  }
-}
-else if (confirmed === 8) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1861d9',
-  fillcolor: '#1861d9', 
-  fillOpacity: 0.8
-  }
-}
-else if (confirmed === 9) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1861d9',
-  fillcolor: '#1861d9', 
-  fillOpacity: 0.8
-  }
-}
-else if (confirmed === 10) {
-  return {
-  weight: 1, // stroke width (default: 3)
-  color: '#1861d9',
-  fillcolor: '#1861d9', 
-  fillOpacity: 0.9
-  }
-}
-}
 
   return (
     <div className="w-full">
       <div className="flex">
-        <div id='map' className='w-2/3' style={{height: '865px'}}>
+        <div id='map' className='w-2/3' style={{ height: '865px' }}>
           <MapContainer
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
             scrollWheelZoom={true}
             doubleClickZoom={true}
-            style={{ height: "100%", width: "100%"}}
+            style={{ height: "100%", width: "100%" }}
           >
+            {/* 클릭한 지점 좌표, current zoom level 콘솔 출력 */}
             <LocationFinder />
             <MapZoomComponent />
             <TileLayer
@@ -451,27 +452,27 @@ else if (confirmed === 10) {
             />
             <LayersControl collapsed={false}>
               <LayersControl.Overlay name="1m 격자">
-                <GeoJSON 
-                  data={seouluniv_polygon} 
+                <GeoJSON
+                  data={seouluniv_polygon}
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="3m 격자">
-                  <GeoJSON 
-                    data={temp3grid}
-                    // data={tempgrid}
-                    // data={seouluniv_polygon_3m} 
-                    // data={grid3m} 
-                    // data={gridData} 
-                    onEachFeature={onEachFeature}
-                    style={gridStyle35}
-                  />
+                <GeoJSON
+                  data={temp3grid}
+                  // data={tempgrid}
+                  // data={seouluniv_polygon_3m} 
+                  // data={grid3m} 
+                  // data={gridData} 
+                  onEachFeature={onEachFeature}
+                  style={gridStyle35}
+                />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
                 <LayerGroup>
-                  <GeoJSON 
-                    data={temp5grid} 
+                  <GeoJSON
+                    data={temp5grid}
                     // data={tempgrid} 
                     // data={grid5m} 
                     // data={seouluniv_polygon_5m} 
@@ -481,112 +482,132 @@ else if (confirmed === 10) {
                 </LayerGroup>
               </LayersControl.Overlay>
               <LayersControl.Overlay name="10m 격자">
-                <GeoJSON 
-                  data={seouluniv_10m} 
+                <GeoJSON
+                  data={seouluniv_10m}
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 >
                 </GeoJSON>
               </LayersControl.Overlay>
               <LayersControl.Overlay name="사고 발생 지점">
-              <LayerGroup>
-                <CircleMarker 
-                  center={[37.5833905641, 127.0595627093]} 
-                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
-                  radius={5}
-                  eventHandlers={{
-                    click: (e) => {
-                      setDisplay('hidden');
-                    }
-                  }}
-                  
-                >
-                  <Popup closeButton={false}>
-                    사고 발생 지점 (1)
-                    <img
-                      src={image2}
-                      alt={image2}
-                    />
-                  </Popup>
-                </CircleMarker>
-                <CircleMarker 
-                  center={[37.5824852936, 127.0579508334]} 
-                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
-                  radius={5}
-                  eventHandlers={{
-                    click: (e) => {
-                      setDisplay('hidden');
-                    }
-                  }}
-                >
-                  <Popup closeButton={false}>
-                    사고 발생 지점 (2)
-                    <img
-                      src={image1}
-                      alt={image1}
-                    />  
-                  </Popup>
-                </CircleMarker>
-                <CircleMarker
-                  center={[37.5832868803, 127.0594854661]}
-                  pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}}
-                  radius={5}
-                  eventHandlers={{
-                    click: (e) => {
-                      setDisplay('flex');
-                    }
-                  }}
-                >
-                  <Popup closeButton={false}>
-                    사고 발생 지점 (3)
-                    <img
-                      src={image2}
-                      alt={image2}
-                    />
-                  </Popup>
-                </CircleMarker>
-              </LayerGroup>
+                <LayerGroup>
+                  <CircleMarker
+                    center={[37.5833905641, 127.0595627093]}
+                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
+                    radius={5}
+                    eventHandlers={{
+                      click: (e) => {
+                        setDisplayCarousel('hidden');
+                        setDisplayContainer('');
+                      }
+                    }}
+                  >
+                    <Popup
+                      closeButton={false}
+                    >
+                      사고 발생 지점 (1)
+                      <img
+                        src={image2}
+                        alt={image2}
+                      />
+                    </Popup>
+                  </CircleMarker>
+                  <CircleMarker
+                    center={[37.5824852936, 127.0579508334]}
+                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
+                    radius={5}
+                    eventHandlers={{
+                      click: (e) => {
+                        setDisplayCarousel('hidden');
+                        setDisplayContainer('');
+                      }
+                    }}
+                  >
+                    <Popup closeButton={false}>
+                      사고 발생 지점 (3)
+                      <img
+                        src={image1}
+                        alt={image1}
+                      />
+                    </Popup>
+                  </CircleMarker>
+                  <CircleMarker
+                    center={[37.5832868803, 127.0594854661]}
+                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
+                    radius={5}
+                    eventHandlers={{
+                      click: (e) => {
+                        setDisplayCarousel('flex');
+                        setDisplayContainer('hidden');
+                      }
+                    }}
+                  >
+                    <Popup
+                      closeButton={false}
+                    >
+                      사고 발생 지점 (2)
+                      <img
+                        src={image2}
+                        alt={image2}
+                      />
+                    </Popup>
+                  </CircleMarker>
+                </LayerGroup>
               </LayersControl.Overlay>
             </LayersControl>
             {/* individually display selected polylines - hidden panel */}
             {
-                selected_polylines.length > 0 && 
-                selected_polylines.map((polyline, i) => (
-                  <Polyline 
-                    key={i} 
-                    // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정
-                    pathOptions={lineOptions[polyline[0][0].toString()[9]]} 
-                    // positions={polyline} 
-                    positions={polyline} 
-                    onMouseOver={e => e.target.openPopup()}
-                    onMouseOut={e => e.target.closePopup()}
-                    // onClick={console.log(`${i+1} clicked - polyline`)}
-                    eventHandlers={{
-                      mouseout: (e) => {
-                      }
-                    }}
-                  >
+              selected_polylines.length > 0 &&
+              selected_polylines.map((polyline, i) => (
+                <Polyline
+                  key={i}
+                  // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정 - 색상 고정
+                  pathOptions={lineOptions[polyline[0][0].toString()[9]]}
+                  // positions={polyline} 
+                  positions={polyline}
+                  // onMouseOver={e => e.target.openPopup()}
+                  // onMouseOut={e => e.target.closePopup()}
+                  // onClick={console.log(`${i+1} clicked - polyline`)}
+                  eventHandlers={{
+                    click: (e) => {
+                      e.target.openPopup(e.latlng);
+                      e.target.bringToFront();
+                    },
+                    mouseover: (e) => {
+                      e.target.setStyle({
+                        weight: 10,
+                        color: '#FFD600',
+                        dashArray: '',
+                      });
+                      e.target.bringToFront();
+                    },
+                    mouseout: (e) => {
+                      e.target.setStyle(lineOptions[polyline[0][0].toString()[9]]);
+                      e.target.bringToFront();
+                    }
+                  }}
+                >
                   <Popup closeButton={false}>
                     <div className="flex items-center">
                       {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
                       <div className="mb-1 text-sm font-extrabold">
-                        Robot_{i+1}
+                        Robot_{i + 1}
                       </div>
                     </div>
                     <div className="text-xs text-gray-400">
-                      2022.1.{i+1}.
+                      2022.1.{i + 1}.
                     </div>
                   </Popup>
-                  </Polyline>
-                ))
+                </Polyline>
+              ))
             }
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-          <Carousel display={display} />
-          {/* <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines}/> */}
+          <Carousel display={displayCarousel} />
+          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} />
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@ export default function LocationFinder() {
 
     const map = useMapEvents({
         click(e) {
-            // console.log(e.latlng);
             setLocation(e.latlng);
             if (location.lat) {
                 console.log('lat: ', location.lat);

@@ -162,7 +162,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   console.log('selectedData: ', selectedData);
 
   return (
-      <div className="justify-center px-6 text-lg text-left">
+      <div className={`justify-center ${display} px-6 text-lg text-left`}>
         <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
         <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
             {
