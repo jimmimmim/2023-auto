@@ -317,13 +317,11 @@ export default function Map() {
   // 수정 필요
   // grid - id popup
   const onEachFeature = (feature, layer, e) => {
-    // let crosspoint = feature.properties.robot_id;
     const gid = feature.properties.id;
     let crosspoint = values[gid];
 
     layer.bindPopup(
       '<div>gid: ' + gid + '</div>'
-      // '<div>통행량: '+crosspoint+'</div>'
     );
   };
 
@@ -431,6 +429,11 @@ export default function Map() {
     }
   }
 
+  const handlePopupClose = (e) => {
+    console.log("Popup is closed")
+    setDisplayCarousel('flex')
+  }
+
   return (
     <div className="w-full">
       <div className="flex">
@@ -441,6 +444,7 @@ export default function Map() {
             scrollWheelZoom={true}
             doubleClickZoom={true}
             style={{ height: "100%", width: "100%" }}
+            popupclose={handlePopupClose}
           >
             {/* 클릭한 지점 좌표, current zoom level 콘솔 출력 */}
             <LocationFinder />
@@ -451,21 +455,17 @@ export default function Map() {
               maxNativeZoom={19} // 실제로 확대되는 범위
             />
             <LayersControl collapsed={false}>
-              <LayersControl.Overlay name="1m 격자">
+              {/* <LayersControl.Overlay name="1m 격자">
                 <GeoJSON
                   data={seouluniv_polygon}
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 />
-              </LayersControl.Overlay>
+              </LayersControl.Overlay> */}
               <LayersControl.Overlay name="3m 격자">
                 <GeoJSON
                   data={temp3grid}
-                  // data={tempgrid}
-                  // data={seouluniv_polygon_3m} 
-                  // data={grid3m} 
-                  // data={gridData} 
-                  onEachFeature={onEachFeature}
+                  // onEachFeature={onEachFeature}
                   style={gridStyle35}
                 />
               </LayersControl.Overlay>
@@ -473,22 +473,19 @@ export default function Map() {
                 <LayerGroup>
                   <GeoJSON
                     data={temp5grid}
-                    // data={tempgrid} 
-                    // data={grid5m} 
-                    // data={seouluniv_polygon_5m} 
-                    onEachFeature={onEachFeature}
+                    // onEachFeature={onEachFeature}
                     style={gridStyle35}
                   />
                 </LayerGroup>
               </LayersControl.Overlay>
-              <LayersControl.Overlay name="10m 격자">
+              {/* <LayersControl.Overlay name="10m 격자">
                 <GeoJSON
                   data={seouluniv_10m}
                   onEachFeature={onEachFeature}
                   style={gridStyle}
                 >
                 </GeoJSON>
-              </LayersControl.Overlay>
+              </LayersControl.Overlay> */}
               <LayersControl.Overlay name="사고 발생 지점">
                 <LayerGroup>
                   <CircleMarker
@@ -497,19 +494,19 @@ export default function Map() {
                     radius={5}
                     eventHandlers={{
                       click: (e) => {
+                        setDisplayCarousel('flex');
+                        setDisplayContainer('hidden');
+                      },
+                      popupclose: (e) => {
                         setDisplayCarousel('hidden');
                         setDisplayContainer('');
                       }
                     }}
                   >
                     <Popup
-                      closeButton={false}
+                      closeButton={true}
                     >
                       사고 발생 지점 (1)
-                      <img
-                        src={image2}
-                        alt={image2}
-                      />
                     </Popup>
                   </CircleMarker>
                   <CircleMarker
@@ -518,17 +515,17 @@ export default function Map() {
                     radius={5}
                     eventHandlers={{
                       click: (e) => {
+                        setDisplayCarousel('flex');
+                        setDisplayContainer('hidden');
+                      },
+                      popupclose: (e) => {
                         setDisplayCarousel('hidden');
                         setDisplayContainer('');
                       }
                     }}
                   >
-                    <Popup closeButton={false}>
+                    <Popup closeButton={true}>
                       사고 발생 지점 (3)
-                      <img
-                        src={image1}
-                        alt={image1}
-                      />
                     </Popup>
                   </CircleMarker>
                   <CircleMarker
@@ -539,17 +536,17 @@ export default function Map() {
                       click: (e) => {
                         setDisplayCarousel('flex');
                         setDisplayContainer('hidden');
+                      },
+                      popupclose: (e) => {
+                        setDisplayCarousel('hidden');
+                        setDisplayContainer('');
                       }
                     }}
                   >
                     <Popup
-                      closeButton={false}
+                      closeButton={true} 
                     >
                       사고 발생 지점 (2)
-                      <img
-                        src={image2}
-                        alt={image2}
-                      />
                     </Popup>
                   </CircleMarker>
                 </LayerGroup>
@@ -583,7 +580,7 @@ export default function Map() {
                     },
                     mouseout: (e) => {
                       e.target.setStyle(lineOptions[polyline[0][0].toString()[9]]);
-                      e.target.bringToFront();
+                      e.target.bringToBack();
                     }
                   }}
                 >
