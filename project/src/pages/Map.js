@@ -26,9 +26,6 @@ import Legend from "../components/Legend";
 // **** Files ***** 
 // import test from '../data/test.json';
 import selectedjson from '../data/selected.json';
-// import selected0to12 from '../data/selected0to12.json';
-// import selected13to20 from '../data/selected13to20.json';
-// import selected21to29 from '../data/selected21to29.json';
 import temp3grid from '../data/temp3grid.json';
 import temp5grid from '../data/temp5grid.json';
 // import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
@@ -46,8 +43,6 @@ import seouluniv_polygon_5m from '../data/5m_geodata_grid.json'; // 5m grid - po
 // import seouluniv_polygon_3m from '../data/3m_data_grid_sum_pretty.json'; // 3m grid - polygon - summarized & beautified
 // import seouluniv_polygon_5m from '../data/5m_data_grid_sum_pretty.json'; // 5m grid - polygon - summarized & beautified
 // import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
-import image1 from '../assets/images/image1.png';
-import image2 from '../assets/images/image2.png';
 
 export default function Map() {
 
@@ -66,7 +61,7 @@ export default function Map() {
   const [grid3m, setGrid3m] = useState(tempgrid);
   const [grid5m, setGrid5m] = useState(tempgrid);
 
-  // const [selected_polylines, setSelected_polylines] = useState([]);
+  const [selected_polylines, setSelected_polylines] = useState([]);
 
   axios.defaults.withCredentials = true;
 
@@ -215,18 +210,16 @@ export default function Map() {
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedPolylines = selected => {
     setSelectedPolyline(selected);
-    return selected;
+    console.log('selectedCars: ', selectedCars);
+    console.log('selectedPolyline: ', selectedPolyline);
+    // return selected;
   };
 
-  // console.log(selectedjson);
-
-  console.log('selectedCars: ', selectedCars);
-  console.log('selectedPolyline: ', selectedPolyline);
 
   // filtered polylines (2차원 위경도 좌표)
-  const selected_polylines = [];
+  // const selected_polylines = [];
 
-  // selectedPolyline to selectedjson
+  // selectedPolyline 대신 selectedjson
   for (let i = 0; i < selectedCars.length; i++) {
 
     let outer = [];
@@ -244,10 +237,6 @@ export default function Map() {
 
   const [displayCarousel, setDisplayCarousel] = useState('hidden'); // 초기 화면 - 장애물 데이터 숨김
   const [displayContainer, setDisplayContainer] = useState(''); // 초기 화면 - 경로 데이터 컨테이너 보여줌
-
-  const setDisplayFlex = () => {
-    console.log('popup closed!!!!!!!!!!!!!');
-  }
 
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
   let values = {}; // 격자 아이디별 통행량(지나가는 선 개수) 담을 딕셔너리
@@ -504,7 +493,7 @@ export default function Map() {
                     }}
                   >
                     <Popup
-                      closeButton={true}
+                      closeButton={false}
                     >
                       사고 발생 지점 (1)
                     </Popup>
@@ -524,7 +513,7 @@ export default function Map() {
                       }
                     }}
                   >
-                    <Popup closeButton={true}>
+                    <Popup closeButton={false}>
                       사고 발생 지점 (3)
                     </Popup>
                   </CircleMarker>
@@ -544,7 +533,7 @@ export default function Map() {
                     }}
                   >
                     <Popup
-                      closeButton={true} 
+                      closeButton={false} 
                     >
                       사고 발생 지점 (2)
                     </Popup>

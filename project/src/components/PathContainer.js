@@ -145,6 +145,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
         }
       }
     }
+    selectedPolylines(selectedData);
     console.log(selectedData);
   }, [selected.length, data[0]])
   
@@ -158,9 +159,9 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
     setID(selected);
     return selected;
   };
-  
-  console.log('selectedData: ', selectedData);
 
+  console.log('selectedData: ', selectedData);
+  
   return (
       <div className={`justify-center ${display} px-6 text-lg text-left`}>
         <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
