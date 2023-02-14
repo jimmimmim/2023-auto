@@ -14,14 +14,6 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
   const [move, setMove] = useState('');
   const currentItem = useRef(); // 슬라이드 아이템 좌우 이동 위한 시작 좌표값
 
-  // random image api - 1000*1000 size (5000으로 바꾸면 고화질 but 로딩 매우 느림)
-  // useEffect(() => {
-  //   for (let i = 0; i < 5; i++) {
-  //     images.push(`https://picsum.photos/1000/1000?random=${i}`)
-  //   }
-  //   console.log(images);
-  // }, [images]);
-
   // images from json file
   useEffect(() => {
     for (let i = 0; i < markerData.length; i++) {
@@ -60,8 +52,8 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
     getCurrentIndex(currentIndex);
   }, [currentIndex])
 
-  let imglat = 43.15498;
-  let imglon = 23.12381;
+  let imglat = 37.58290073729356; // default
+  let imglon = 127.06014163989997; // default
   if (markerData[images.indexOf(currentImg)]) {
     if (markerData[images.indexOf(currentImg)]['lat'] && markerData[images.indexOf(currentImg)]['lon']) {
       imglat = markerData[images.indexOf(currentImg)]['lat'];

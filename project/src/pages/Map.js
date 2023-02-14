@@ -437,25 +437,27 @@ export default function Map() {
     setSelectedIndex(selected);
   };
 
-  const createIcon = (url) => {
+  const createIcon = (url, size, center=[0,0]) => {
     return new L.Icon({
       iconUrl: url,
+      iconAnchor: center,
+      iconSize: size,
     });
   }
 
-  const getMarkerIcon = (index) => {
+  const getMarkerIcon = (index) => { // [x, y], 숫자가 클수록 왼쪽&위로 이동
     if (displayCarousel === 'hidden')
-      return createIcon(icon);
+      return createIcon(icon, '16px', [8, 10]);
     else if(index === selectedIndex)
-      return createIcon(iconActive);
+      return createIcon(iconActive, '32px', [14, 31]);
 
-    return createIcon(icon);
+    return createIcon(icon, '16px', [8, 10]);
   }
 
   return (
     <div className="w-full">
       <div className="flex">
-        <div id='map' className='w-2/3' style={{ height: '865px' }}>
+        <div id='map' className='w-2/3' style={{ height: '1080px' }}>
           <MapContainer
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
@@ -555,8 +557,8 @@ export default function Map() {
                     },
                     mouseover: (e) => {
                       e.target.setStyle({
-                        weight: 10,
-                        color: '#FFD600',
+                        weight: 4,
+                        // color: '#FFD600',
                         dashArray: '',
                       });
                       e.target.bringToFront();

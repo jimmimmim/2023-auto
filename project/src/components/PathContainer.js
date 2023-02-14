@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PathHistory from './PathHistory';
 
-export default function PathContainer({selectedRobots, selectedPolylines, display, setAllRobotIDs}) {
+export default function PathContainer({ selectedRobots, selectedPolylines, display, setAllRobotIDs }) {
 
   const robot_items = []; // 체크박스 배열 초기화 (생성 시에만 필요, checked 값 모두 false) ['']일 경우 경로 출력안됨
-  const [robots, setRobots] = useState(robot_items); 
+  const [robots, setRobots] = useState(robot_items);
   const [data, setData] = useState([]); // individual polyline
   const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
@@ -13,20 +13,33 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   const [selected, setSelected] = useState([]);   // selected robots
   const [selectedData, setSelectedData] = useState({});   // selected data
 
-  axios.defaults.withCredentials = true; 
+  const [checkedAll, setCheckedAll] = useState(true); // 선택 초기화 버튼 (이후 전체선택/전체해제로 수정)
+
+  axios.defaults.withCredentials = true;
+
+  // CSS styles - 전체선택
+  let componentClass = ""; // change div background color depend on checkedAll (boolean)
+  let checkboxStyle = ""; // custom checkbox
+  let customcheckboxStyle = ""; // custom checkbox
+  if (checkedAll) {
+    componentClass = "bg-[#2D4A65]";
+    customcheckboxStyle = 'hidden';
+  } else {
+    checkboxStyle = 'hidden';
+  }
 
   // GET
   useEffect(() => {
     axios
-    .all([
-      axios.get('/robot-id')
-    ])
-    .then(
-      axios.spread((resid) => {
-        setRobotIDs(resid.data);
+      .all([
+        axios.get('/robot-id')
+      ])
+      .then(
+        axios.spread((resid) => {
+          setRobotIDs(resid.data);
         })
       )
-      .catch(err =>{
+      .catch(err => {
         console.log(err);
       })
   }, []);
@@ -35,17 +48,17 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
   useEffect(() => {
     axios
-    .all([
-      axios.post("/robot-location", {
-        id: id
-      }),
-    ])
-    .then(
-      axios.spread((res) => {
-        setData(res.data);
+      .all([
+        axios.post("/robot-location", {
+          id: id
+        }),
+      ])
+      .then(
+        axios.spread((res) => {
+          setData(res.data);
         })
       )
-      .catch(err =>{
+      .catch(err => {
         console.log(err);
       })
   }, [id]);
@@ -57,12 +70,12 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   // 로봇 이름 부여
   for (let i = 0; i < robotids.length; i++) {
     const robot_info = {};
-    
+
     let robot_number = '';
     if (i < 9) {
-      robot_number = '0' + (i+1).toString();
+      robot_number = '0' + (i + 1).toString();
     } else {
-      robot_number = (i+1).toString();
+      robot_number = (i + 1).toString();
     }
 
     robot_info['name'] = 'Robot_' + robot_number;
@@ -73,15 +86,11 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   }
 
   useEffect(() => {
-    if (robots.length === 1){
+    if (robots.length === 1) {
       setRobots(robot_items);
     }
   }, [robot_items])
   // }, [])
-
-
-  // change button background color by css class - button removed
-  let componentClass = "";
 
   // remove items
   const removeItem = (id) => {
@@ -106,7 +115,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
     });
     setRobots(modifiedRobots);
   };
-  
+
 
   // checkbox - 선택 및 해제
   const handleChange = id => {
@@ -125,6 +134,12 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
     setRobots(modifiedRobots);
   };
 
+  // checkbox - 전체 선택
+  const handleChangeAll = () => {
+    setSelected([]); // 전체 해제
+    console.log('checkedAll: ', checkedAll)
+  }
+
   // send selected robot lists from PathContainer.js to Map.js
   useEffect(() => {
     selectedRobots(selected);
@@ -141,7 +156,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
     selectedPolylines(selectedData);
     console.log(selectedData);
   }, [selected.length, data[0]])
-  
+
   // send selected path data from PathContainer.js to Map.js
   useEffect(() => {
     selectedPolylines(selectedData);
@@ -151,27 +166,35 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   useEffect(() => {
     setAllRobotIDs(robotids);
   }, [robotids])
-  
+
   // 선택된 개별 차량(로봇) 아이디를 읽어옴
   const selectedID = selected => {
     setID(selected);
     return selected;
   };
 
+  console.log('selected: ', selected);
   console.log('selectedData: ', selectedData); // delay
-  
+
+  // 하나라도 체크되어 있으면 선택 초기화 버튼 활성화
+  useEffect(() => {
+    (selected.length > 0) ? setCheckedAll(true) : setCheckedAll(false)
+  }, [selected])
+
   return (
-      <div className={`justify-center ${display} px-6 text-lg text-left`}>
-        <h1 className='py-4 pl-6 tracking-wide text-white uppercase bg-[#1F2834] min-w-[250px]'>경로 데이터</h1>
-        <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
-            {
-              robots.map((v, i) => (
-                <PathHistory key={i} robot={v} handleChange={handleChange} selectedID={selectedID}/>
-              ))
-            }
-        </div>
-        {/* only for check selected list */}
-        {/* <div className='flex flex-wrap justify-start px-6 min-w-[260px] bg-[#1F2834]'>
+    <div className={`justify-center ${display} px-6 text-lg text-left`}>
+      <div className='flex items-center justify-between bg-[#1F2834]'>
+        <h1 className='py-4 pl-6 tracking-wide text-white uppercase  min-w-[250px]'>경로 데이터</h1>
+      </div>
+      <div id='dashboard-upper' className='flex flex-col overflow-auto h-[450px] bg-[#1F2834] min-w-[250px]'>
+        {
+          robots.map((v, i) => (
+            <PathHistory key={i} robot={v} handleChange={handleChange} selectedID={selectedID} />
+          ))
+        }
+      </div>
+      {/* only for check selected list */}
+      {/* <div className='flex flex-wrap justify-start px-6 min-w-[260px] bg-[#1F2834]'>
         {
           // sort by robot name
           selected.sort().map((v, i) => (
@@ -184,7 +207,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
           ))
         }
         </div> */}
-      </div>
+    </div>
 
   );
 }

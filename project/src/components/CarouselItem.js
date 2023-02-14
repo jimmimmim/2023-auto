@@ -11,7 +11,7 @@ export default function CarouselItem({ img, setSelectedImg, currentImg }) {
 
     return (
         <>
-            <label className={`${width} h-[54px] mx-[2px] bg-black cursor-pointer hover:bg-gray-800 overflow-hidden`}>
+            <label className={`${width} h-[54px] mx-[4px] bg-black cursor-pointer hover:bg-gray-800 overflow-hidden`}>
                 <input
                     type="radio" name='slider'
                     className='hidden img-slider-btn'
