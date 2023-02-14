@@ -1,21 +1,10 @@
 import React, { useEffect, useState, forwardRef, useRef } from 'react';
 import './style.css';
-// import image1 from '../assets/images/image1.png';
-// import image2 from '../assets/images/image2.png';
-// import image3 from '../assets/images/image3.png';
-// import image4 from '../assets/images/image4.png';
-// import image5 from '../assets/images/image5.png';
-// import image6 from '../assets/images/image6.png';
-// import image7 from '../assets/images/image7.png';
-// import image8 from '../assets/images/image8.png';
 
 import CarouselItem from './CarouselItem';
+import markerData from '../data/markerdata.json';
 
-export default function Carousel({ display }) {
-
-  // ++++ 마커 클릭 시 display 변경
-  // const display = ['flex', 'hidden'];
-  // console.log('display: ', display);
+export default function Carousel({ display, marker, getCurrentIndex }) {
 
   // const [images, setImages] = useState([image1, image2, image3, image4, image5]); // 장애물 이미지 배열 - 이후 api를 통해 받아오는 것으로 수정
   const [images, setImages] = useState([]); // 장애물 이미지 배열
@@ -25,19 +14,21 @@ export default function Carousel({ display }) {
   const [move, setMove] = useState('');
   const currentItem = useRef(); // 슬라이드 아이템 좌우 이동 위한 시작 좌표값
 
-  // useEffect(() => {
-  //   currentItem.current.focus();
-  //   currentItem.current.style.border = '3px solid red';
-  //   console.log(currentItem.current.style.border);
-  // }, [currentIndex])
-
   // random image api - 1000*1000 size (5000으로 바꾸면 고화질 but 로딩 매우 느림)
+  // useEffect(() => {
+  //   for (let i = 0; i < 5; i++) {
+  //     images.push(`https://picsum.photos/1000/1000?random=${i}`)
+  //   }
+  //   console.log(images);
+  // }, [images]);
+
+  // images from json file
   useEffect(() => {
-    for (let i = 0; i < 5; i++) {
-      images.push(`https://picsum.photos/1000/1000?random=${i}`)
+    for (let i = 0; i < markerData.length; i++) {
+      images.push(markerData[i]['url']);
     }
     console.log(images);
-  }, [images]);
+  }, [images])
 
   // read selected image from CarouselItem.js
   const setSelectedImg = selected => {
@@ -54,20 +45,29 @@ export default function Carousel({ display }) {
     (currentIndex !== 0) ? setCurrentIndex(idx => idx - 1) : setCurrentIndex(images.length - 1);
   };
 
-  const onRight = () => {
-    setMove('slide-right');
-
-  }
-
-  const onLeft = () => {
-    setMove('slide-left');
-  }
+  // 클릭한 마커 인덱스에 해당하는 이미지 선택
+  useEffect(() => {
+    setCurrentIndex(marker);
+  }, [marker])
 
   // set current image depend on current index (handled by slider buttons)
   useEffect(() => {
     setCurrentImg(images[currentIndex]);
   }, [currentIndex])
 
+  // send current index from Carousel.js to Map.js
+  useEffect(() => {
+    getCurrentIndex(currentIndex);
+  }, [currentIndex])
+
+  let imglat = 43.15498;
+  let imglon = 23.12381;
+  if (markerData[images.indexOf(currentImg)]) {
+    if (markerData[images.indexOf(currentImg)]['lat'] && markerData[images.indexOf(currentImg)]['lon']) {
+      imglat = markerData[images.indexOf(currentImg)]['lat'];
+      imglon = markerData[images.indexOf(currentImg)]['lon'];
+    } 
+  }
 
   return (
     <div className={`${display} px-6 text-white`}>
@@ -79,7 +79,9 @@ export default function Carousel({ display }) {
         <div className='mt-[-24px] flex justify-between w-full px-3 bg-black bg-opacity-70'>
           <div className='flex items-center'>
             <div className='w-[6px] h-[6px] mr-1 bg-red-600 rounded-full'></div>
-            <span className='text-[14px]'>41.4033843, 2.1920389</span>
+            <span className='text-[14px]'>
+              {imglat}, {imglon}
+              </span>
           </div>
           <div>
             <span>{images.indexOf(currentImg) + 1}</span>
@@ -114,8 +116,6 @@ export default function Carousel({ display }) {
             </button>
           </div>
         </div>
-        {/* <h1 className='text-center'>currentIndex - {currentIndex}</h1> */}
-        {/* <h1 className='text-center'>currentImg - {currentImg}</h1> */}
       </div>
     </div>
 

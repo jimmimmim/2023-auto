@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PathHistory from './PathHistory';
 
-export default function PathContainer({selectedRobots, selectedPolylines, display}) {
+export default function PathContainer({selectedRobots, selectedPolylines, display, setAllRobotIDs}) {
 
   const robot_items = []; // 체크박스 배열 초기화 (생성 시에만 필요, checked 값 모두 false) ['']일 경우 경로 출력안됨
   const [robots, setRobots] = useState(robot_items); 
@@ -10,15 +10,8 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   const [robotids, setRobotIDs] = useState(['']); // orighinal robot id array
 
   const [id, setID] = useState('F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55');
-  // const [id, setID] = useState('');
-
-  // selected robots
-  const [selected, setSelected] = useState([]);
-  
-  // selected data
-  const [selectedData, setSelectedData] = useState({});
-
-  // let temp = {};
+  const [selected, setSelected] = useState([]);   // selected robots
+  const [selectedData, setSelectedData] = useState({});   // selected data
 
   axios.defaults.withCredentials = true; 
 
@@ -153,6 +146,11 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
   useEffect(() => {
     selectedPolylines(selectedData);
   }, [selectedData])
+
+  // send robot ids from PathContainer.js to Map.js
+  useEffect(() => {
+    setAllRobotIDs(robotids);
+  }, [robotids])
   
   // 선택된 개별 차량(로봇) 아이디를 읽어옴
   const selectedID = selected => {
@@ -160,7 +158,7 @@ export default function PathContainer({selectedRobots, selectedPolylines, displa
     return selected;
   };
 
-  console.log('selectedData: ', selectedData);
+  console.log('selectedData: ', selectedData); // delay
   
   return (
       <div className={`justify-center ${display} px-6 text-lg text-left`}>

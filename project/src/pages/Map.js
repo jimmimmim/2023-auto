@@ -6,11 +6,13 @@ import {
   GeoJSON,
   Polyline,
   CircleMarker,
+  Marker,
   LayersControl,
   LayerGroup,
   useMapEvent,
   Popup,
 } from 'react-leaflet';
+import * as L from "leaflet";
 import axios from 'axios';
 
 import 'leaflet/dist/leaflet.css';
@@ -25,6 +27,7 @@ import Legend from "../components/Legend";
 
 // **** Files ***** 
 // import test from '../data/test.json';
+import markerData from '../data/markerdata.json';
 import selectedjson from '../data/selected.json';
 import temp3grid from '../data/temp3grid.json';
 import temp5grid from '../data/temp5grid.json';
@@ -44,6 +47,9 @@ import seouluniv_polygon_5m from '../data/5m_geodata_grid.json'; // 5m grid - po
 // import seouluniv_polygon_5m from '../data/5m_data_grid_sum_pretty.json'; // 5m grid - polygon - summarized & beautified
 // import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
 
+import icon from '../assets/icons/circle.png';
+import iconActive from '../assets/icons/placeholder.png';
+
 export default function Map() {
 
   // const [values, setValues] = useState({});
@@ -55,13 +61,24 @@ export default function Map() {
     "features": []
   };
 
+  const [robotids, setRobotIDs] = useState([]);
   const [selectedCars, setSelectedCars] = useState([]);
   const [selectedPolyline, setSelectedPolyline] = useState({});
 
   const [grid3m, setGrid3m] = useState(tempgrid);
   const [grid5m, setGrid5m] = useState(tempgrid);
 
-  const [selected_polylines, setSelected_polylines] = useState([]);
+  // marker center latlng
+  // const [markerData, setMarkerData] = useState
+  //   (
+  //     [
+  //       [37.5849914939, 127.0571175299],
+  //       [37.5850526809, 127.0564280196],
+  //       [37.5860970553, 127.0562659947]
+  //     ]
+  //   );
+
+  // const [selected_polylines, setSelected_polylines] = useState([]);
 
   axios.defaults.withCredentials = true;
 
@@ -210,14 +227,18 @@ export default function Map() {
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedPolylines = selected => {
     setSelectedPolyline(selected);
-    console.log('selectedCars: ', selectedCars);
     console.log('selectedPolyline: ', selectedPolyline);
-    // return selected;
+  };
+  
+  // PathContainer에서 호출한 차량(로봇) 아이디 배열을 읽어옴 (from PathContainer.js)
+  const setAllRobotIDs = selected => {
+    setRobotIDs(selected);
   };
 
+  console.log('selectedCars: ', selectedCars);
 
   // filtered polylines (2차원 위경도 좌표)
-  // const selected_polylines = [];
+  const selected_polylines = {};
 
   // selectedPolyline 대신 selectedjson
   for (let i = 0; i < selectedCars.length; i++) {
@@ -229,7 +250,7 @@ export default function Map() {
         inner.push(selectedjson[selectedCars[i]][j]['lat'], selectedjson[selectedCars[i]][j]['lon']);
         outer.push(inner);
       }
-      selected_polylines.push(outer);
+      selected_polylines[selectedCars[i]] = outer;
     }
   }
 
@@ -291,7 +312,7 @@ export default function Map() {
 
   const temptemp = [];
   temptemp.push(tempgrid);
-  console.log('temptemp[0]: ', temptemp[0]);
+  // console.log('temptemp[0]: ', temptemp[0]);
 
   // (1) 아이디별 value 저장 - total
   for (let i = 0; i < robots.length; i++) {
@@ -303,8 +324,7 @@ export default function Map() {
 
   console.log('values: ', values); // gid별 통행량
 
-  // 수정 필요
-  // grid - id popup
+  // grid - id popup (팝업 숨겨둠)
   const onEachFeature = (feature, layer, e) => {
     const gid = feature.properties.id;
     let crosspoint = values[gid];
@@ -313,19 +333,6 @@ export default function Map() {
       '<div>gid: ' + gid + '</div>'
     );
   };
-
-  const highlightPath = (layer, e) => {
-    // let layer = e.target;
-
-    layer.setStyle({
-      weight: 5,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.7
-    });
-
-    layer.bringToFront();
-  }
 
   // gid 배열 전달되었을 때 격자에 통행량 표시하는 함수
   const gridStyle35 = (feature) => {
@@ -419,8 +426,30 @@ export default function Map() {
   }
 
   const handlePopupClose = (e) => {
-    console.log("Popup is closed")
     setDisplayCarousel('flex')
+  }
+
+  // Marker Icon
+  const [selectedIndex, setSelectedIndex] = useState(0); // value to catch active marker index
+
+  // PathContainer에서 호출한 차량(로봇) 아이디 배열을 읽어옴 (from PathContainer.js)
+  const getCurrentIndex = selected => {
+    setSelectedIndex(selected);
+  };
+
+  const createIcon = (url) => {
+    return new L.Icon({
+      iconUrl: url,
+    });
+  }
+
+  const getMarkerIcon = (index) => {
+    if (displayCarousel === 'hidden')
+      return createIcon(icon);
+    else if(index === selectedIndex)
+      return createIcon(iconActive);
+
+    return createIcon(icon);
   }
 
   return (
@@ -477,83 +506,48 @@ export default function Map() {
               </LayersControl.Overlay> */}
               <LayersControl.Overlay name="사고 발생 지점">
                 <LayerGroup>
-                  <CircleMarker
-                    center={[37.5833905641, 127.0595627093]}
-                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
-                    radius={5}
-                    eventHandlers={{
-                      click: (e) => {
-                        setDisplayCarousel('flex');
-                        setDisplayContainer('hidden');
-                      },
-                      popupclose: (e) => {
-                        setDisplayCarousel('hidden');
-                        setDisplayContainer('');
-                      }
-                    }}
-                  >
-                    <Popup
-                      closeButton={false}
+                  {     
+                    markerData.length > 0 &&
+                    markerData.map((position, i) => (
+                    <Marker
+                      key={i} 
+                      position={position} // CircleMarker: position => center
+                      icon={getMarkerIcon(i)}
+                      // pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }} // CircleMarker
+                      // radius={5} // CircleMarker
+                      eventHandlers={{
+                        click: (e) => {
+                          setDisplayCarousel('flex');
+                          setDisplayContainer('hidden');
+                          setSelectedIndex(i); // change active icon style
+                        },
+                        popupclose: (e) => {
+                          setDisplayCarousel('hidden');
+                          setDisplayContainer('');
+                        }
+                      }}
                     >
-                      사고 발생 지점 (1)
-                    </Popup>
-                  </CircleMarker>
-                  <CircleMarker
-                    center={[37.5824852936, 127.0579508334]}
-                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
-                    radius={5}
-                    eventHandlers={{
-                      click: (e) => {
-                        setDisplayCarousel('flex');
-                        setDisplayContainer('hidden');
-                      },
-                      popupclose: (e) => {
-                        setDisplayCarousel('hidden');
-                        setDisplayContainer('');
-                      }
-                    }}
-                  >
-                    <Popup closeButton={false}>
-                      사고 발생 지점 (3)
-                    </Popup>
-                  </CircleMarker>
-                  <CircleMarker
-                    center={[37.5832868803, 127.0594854661]}
-                    pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }}
-                    radius={5}
-                    eventHandlers={{
-                      click: (e) => {
-                        setDisplayCarousel('flex');
-                        setDisplayContainer('hidden');
-                      },
-                      popupclose: (e) => {
-                        setDisplayCarousel('hidden');
-                        setDisplayContainer('');
-                      }
-                    }}
-                  >
-                    <Popup
-                      closeButton={false} 
-                    >
-                      사고 발생 지점 (2)
-                    </Popup>
-                  </CircleMarker>
+                      <Popup
+                        closeButton={false}
+                        className='hidden'
+                      >
+                        사고 발생 지점 ({i+1})
+                      </Popup>
+                    </Marker>
+                    ))
+                  }
                 </LayerGroup>
               </LayersControl.Overlay>
             </LayersControl>
             {/* individually display selected polylines - hidden panel */}
             {
-              selected_polylines.length > 0 &&
-              selected_polylines.map((polyline, i) => (
+              Object.keys(selected_polylines).length > 0 &&
+              Object.keys(selected_polylines).map((polyline, i) => (
                 <Polyline
                   key={i}
                   // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정 - 색상 고정
-                  pathOptions={lineOptions[polyline[0][0].toString()[9]]}
-                  // positions={polyline} 
-                  positions={polyline}
-                  // onMouseOver={e => e.target.openPopup()}
-                  // onMouseOut={e => e.target.closePopup()}
-                  // onClick={console.log(`${i+1} clicked - polyline`)}
+                  pathOptions={lineOptions[selected_polylines[polyline][0][0].toString()[9]]}
+                  positions={selected_polylines[polyline]}
                   eventHandlers={{
                     click: (e) => {
                       e.target.openPopup(e.latlng);
@@ -568,7 +562,7 @@ export default function Map() {
                       e.target.bringToFront();
                     },
                     mouseout: (e) => {
-                      e.target.setStyle(lineOptions[polyline[0][0].toString()[9]]);
+                      e.target.setStyle(lineOptions[selected_polylines[polyline][0][0].toString()[9]]);
                       e.target.bringToBack();
                     }
                   }}
@@ -577,11 +571,16 @@ export default function Map() {
                     <div className="flex items-center">
                       {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
                       <div className="mb-1 text-sm font-extrabold">
-                        Robot_{i + 1}
+                        Robot_{robotids.indexOf(polyline) + 1}
                       </div>
                     </div>
+                    {/* date */}
                     <div className="text-xs text-gray-400">
-                      2022.1.{i + 1}.
+                      {polyline.slice(-19, polyline.length).split(' ')[0]}
+                    </div>
+                    {/* time */}
+                    <div className="hidden text-xs text-gray-400">
+                      {polyline.slice(-19, polyline.length).split(' ')[1]}
                     </div>
                   </Popup>
                 </Polyline>
@@ -592,8 +591,8 @@ export default function Map() {
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
           {/* <Dashboard display={display} /> */}
-          <Carousel display={displayCarousel} />
-          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} />
+          <Carousel display={displayCarousel} marker={selectedIndex} getCurrentIndex={getCurrentIndex} />
+          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} setAllRobotIDs={setAllRobotIDs}/>
         </div>
       </div>
     </div>
