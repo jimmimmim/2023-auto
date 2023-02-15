@@ -1,84 +1,57 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
-  SVGOverlay,
   GeoJSON,
-  Polyline,
-  CircleMarker,
-  Marker,
   LayersControl,
   LayerGroup,
-  useMapEvent,
+  Polyline,
+  Marker,
   Popup,
 } from 'react-leaflet';
 import * as L from "leaflet";
-import axios from 'axios';
-
 import 'leaflet/dist/leaflet.css';
 
-import PathContainer from "../components/PathContainer";
-import Dashboard from "../components/Dashboard";
-import Carousel from "../components/Carousel";
+import axios from 'axios';
 
+import PathContainer from "../components/PathContainer";
+import Carousel from "../components/Carousel";
 import LocationFinder from "../components/LocationFinder";
 import MapZoomComponent from '../components/MapZoomComponent';
-import Legend from "../components/Legend";
+// import Dashboard from "../components/Dashboard"; // chart dashboard
+// import Legend from "../components/Legend";
 
 // **** Files ***** 
-// import test from '../data/test.json';
-import markerData from '../data/markerdata.json';
-import selectedjson from '../data/selected.json';
-import temp3grid from '../data/temp3grid.json';
-import temp5grid from '../data/temp5grid.json';
-// import seouluniv_10m from '../data/seouluniv10104326.json'; // 10m grid
-import seouluniv_10m from '../data/polygon10m_0112.json'; // 10m grid
-// import seouluniv_polygon from '../data/seouluniv1mpolygon.json'; // 1m grid - polygon
-// import seouluniv_polygon from '../data/grid1m_large.json'; // 1m grid - polygon - too large - ERROR
-// import seouluniv_polygon from '../data/1m_data_grid.json'; // 1m grid - polygon - summarized
-import seouluniv_polygon from '../data/polygon1m_0112.json'; // 1m grid - polygon - latest version ✅
-// import seouluniv_polygon_3m from '../data/3m_data_grid.json'; // 3m grid - polygon - latest version ✅
-// import seouluniv_polygon_5m from '../data/5m_data_grid.json'; // 5m grid - polygon - latest version ✅
-import seouluniv_polygon_3m from '../data/3m_geodata_grid.json'; // 3m grid - polygon - special id
-import seouluniv_polygon_5m from '../data/5m_geodata_grid.json'; // 5m grid - polygon - special id
-// import seouluniv_polygon_3m from '../data/3m_data_grid_summarized.json'; // 3m grid - polygon - summarized
-// import seouluniv_polygon_5m from '../data/5m_data_grid_summarized.json'; // 5m grid - polygon - summarized
-// import seouluniv_polygon_3m from '../data/3m_data_grid_sum_pretty.json'; // 3m grid - polygon - summarized & beautified
-// import seouluniv_polygon_5m from '../data/5m_data_grid_sum_pretty.json'; // 5m grid - polygon - summarized & beautified
-// import seouluniv_robot from '../data/seouluniv1mrobot.json'; // points - robot
+import markerData from '../data/markerdata.json'; // 장애물 데이터 (속성정보 포함)
+import selectedjson from '../data/selected.json'; // 경로 데이터 -> API로 받아오는 것으로 수정
+import temp3grid from '../data/temp3grid.json'; // 3m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 
+import temp5grid from '../data/temp5grid.json'; // 5m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정
 
-import icon from '../assets/icons/circle.png';
-import iconActive from '../assets/icons/placeholder.png';
+import icon from '../assets/icons/circle.png'; // default marker icon
+import iconActive from '../assets/icons/placeholder.png'; // active(current) marker icon
 
 export default function Map() {
 
-  // const [values, setValues] = useState({});
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //                        [ 격자 (Grid) 레이어 표시를 위한 기본 Geojson 템플릿 ]
+  //      geojson 형식을 맞춰줌 - 유효한 격자 polygon만 필터링하여 tempgrid 내 features 배열에 추가됨
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  // geojson 형식을 맞춰줌 - 유효한 격자 polygon만 features에 추가됨
   const tempgrid = {
     "type": "FeatureCollection",
     "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
     "features": []
   };
 
-  const [robotids, setRobotIDs] = useState([]);
+  const [robotids, setRobotIDs] = useState([]); // PathContainer에서 호출한 로봇 아이디 배열 (API 수정되어 Robot별 name 자동 부여되면 필요 없어짐)
   const [selectedCars, setSelectedCars] = useState([]);
-  const [selectedPolyline, setSelectedPolyline] = useState({});
+  const [selectedPolyline, setSelectedPolyline] = useState({}); // 한 번 이상 호출된 경로 정보를 담는 객체 (선택 해제되어도 삭제하지 않음)
 
-  const [grid3m, setGrid3m] = useState(tempgrid);
-  const [grid5m, setGrid5m] = useState(tempgrid);
-
-  // marker center latlng
-  // const [markerData, setMarkerData] = useState
-  //   (
-  //     [
-  //       [37.5849914939, 127.0571175299],
-  //       [37.5850526809, 127.0564280196],
-  //       [37.5860970553, 127.0562659947]
-  //     ]
-  //   );
-
-  // const [selected_polylines, setSelected_polylines] = useState([]);
+  const [grid3m, setGrid3m] = useState(tempgrid); // 통행량이 1 이상인 3m 격자 생성 위한 템플릿
+  const [grid5m, setGrid5m] = useState(tempgrid); // 통행량이 1 이상인 5m 격자 생성 위한 템플릿
+  
+  const [displayCarousel, setDisplayCarousel] = useState('hidden'); // 초기 화면 - 장애물 데이터 숨김 ('hidden', 'flex')
+  const [displayContainer, setDisplayContainer] = useState(''); // 초기 화면 - 경로 데이터 컨테이너 보여줌 ('', 'hidden')
 
   axios.defaults.withCredentials = true;
 
@@ -100,69 +73,12 @@ export default function Map() {
       })
   }, []);
 
-  console.log('grid3m: ', grid3m);
-  // console.log('seouluniv_polygon_3m: ', seouluniv_polygon_3m)
-  console.log('grid5m: ', grid5m);
-  // console.log('seouluniv_polygon_5m: ', seouluniv_polygon_5m)
-
-  // 10m grid - valid value
-  const gridStyle = (feature) => {
-    // const confirmed = feature.properties.polygon_id; // polygon id가 존재하면 표시
-    const confirmed = feature.properties.robot_id; // robot id가 존재하면 표시 (robot_id: value (통행량))
-
-    if (!confirmed) {
-      return {
-        color: '#1871D9', // stroke color
-        weight: 1, // stroke width (default: 3)
-        opacity: 1, // stroke opacity (default: 1.0)
-        fillcolor: '#1871D9',
-        fillOpacity: 0.1
-      }
-    } else if (confirmed === 1) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 0.1
-      }
-    } else if (confirmed >= 2 && confirmed < 3) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 0.3
-      }
-    } else if (confirmed >= 3 && confirmed < 5) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 0.5
-      }
-    } else if (confirmed >= 5 && confirmed < 7) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 0.7
-      }
-    } else if (confirmed >= 7 && confirmed < 9) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 0.9
-      }
-    } else if (confirmed >= 9) {
-      return {
-        weight: 1, // stroke width (default: 3)
-        color: '#1871D9',
-        fillcolor: '#1871D9',
-        fillOpacity: 1
-      }
-    }
-  }
-
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //               [ 경로 (polyline) 스타일 ]
+  //      - 경로 개수에 상관없이 총 10개 필요 (0~9)
+  //      - weight: 선 굵기 / color: 선 색상 / fillColor: 색상 (미지정 시 color 색상과 동일하게 적용)
+  //      - dashArray: 점선 (기본값은 null, '' 전달 시 실선)
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   const lineOptions = [
     { weight: 3, color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
     { weight: 3, color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
@@ -174,70 +90,27 @@ export default function Map() {
     { weight: 3, color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
     { weight: 3, color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
     { weight: 3, color: '#F76301', fillColor: '#F76301', dashArray: 4, },
-    { weight: 3, color: '#620093', fillColor: '#620093', dashArray: 4, },
-    { weight: 3, color: '#934AB3', fillColor: '#934AB3', dashArray: 4, },
-    { weight: 3, color: '#48C637', fillColor: '#48C637', dashArray: 4, },
-    { weight: 3, color: '#FFAE00', fillColor: '#FFAE00', dashArray: 4, },
-    { weight: 3, color: '#000000', fillColor: '#000000', dashArray: 4, },
   ];
-
-  // add polylines from server
-  const labeled_polylines = {}; // polyline 각각의 정보를 담을 객체
-  // const polylines = [];
-
-  // 고유아이디+날짜+시각
-  const phone_date = Object.keys(labeled_polylines);
-
-  // pathcontainer > pathHistory 로 넘겨줄 배열 생성
-  const checkbox_info = [];
-
-  // 날짜, 시각 분리
-  for (let i = 0; i < phone_date.length; i++) {
-    const phone_info = {};
-    const phone = phone_date[i].slice(0, 36);
-    const date_time = phone_date[i].slice(-19, phone_date[i].length);
-    const date = date_time.split(' ')[0];
-    const time = date_time.split(' ')[1];
-
-    let robot_index = '';
-    if (i < 9) {
-      robot_index = '0' + (i + 1).toString();
-    } else {
-      robot_index = (i + 1).toString();
-    }
-
-    phone_info['name'] = 'Robot_' + robot_index;
-    phone_info['original_id'] = phone_date[i];
-    phone_info['id'] = phone;
-    phone_info['date'] = date;
-    phone_info['time'] = time;
-    phone_info['checked'] = false;
-
-    checkbox_info.push(phone_info);
-  }
-
-  // console.log(Object.keys(labeled_polylines)); 
 
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedRobots = selected => {
     setSelectedCars(selected);
-    return selected;
   };
 
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedPolylines = selected => {
     setSelectedPolyline(selected);
-    console.log('selectedPolyline: ', selectedPolyline);
   };
-  
-  // PathContainer에서 호출한 차량(로봇) 아이디 배열을 읽어옴 (from PathContainer.js)
+
+  // PathContainer에서 호출한 차량(로봇) 전체 아이디 배열을 읽어옴 (from PathContainer.js)
   const setAllRobotIDs = selected => {
     setRobotIDs(selected);
   };
 
-  console.log('selectedCars: ', selectedCars);
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //       filtered polylines (2차원 위경도 좌표) - 선택된 경로에 포함된 위치좌표 배열 저장
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  // filtered polylines (2차원 위경도 좌표)
   const selected_polylines = {};
 
   // selectedPolyline 대신 selectedjson
@@ -254,10 +127,9 @@ export default function Map() {
     }
   }
 
-  console.log('selected_polylines: ', selected_polylines);
-
-  const [displayCarousel, setDisplayCarousel] = useState('hidden'); // 초기 화면 - 장애물 데이터 숨김
-  const [displayContainer, setDisplayContainer] = useState(''); // 초기 화면 - 경로 데이터 컨테이너 보여줌
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //        Grid Layer - 통행량, 장애물 데이터 표출을 위해 geojson 형식 격자 레이어 추가 
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
   let values = {}; // 격자 아이디별 통행량(지나가는 선 개수) 담을 딕셔너리
@@ -270,16 +142,13 @@ export default function Map() {
       for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++) {
         gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
         gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
-        // gids.push(selectedPolyline[selectedCars[i]][j]['id_10m']);
       }
     }
     gids = [...new Set(gids.sort())]; // 차량 내 격자아이디 중복 제거, 아이디순 정렬(편의상)
-    // console.log(gids);
     robots.push(gids);
-    // console.log(robots);
   }
 
-  console.log('robots: ', robots);
+  console.log('robots: ', robots); // delay
 
   // 유효한 값이 있는 격자만 선택
   let gid4grid = [] // 격자를 그리기 위한 배열 - robots 각 원소의 합집합
@@ -298,21 +167,8 @@ export default function Map() {
       }
     }
   }
-  // for (let i = 0; i < grid5m['features'].length; i++) {
-  //   for (let j = 0; j < gid4grid.length; j++) {
-  //     if (grid5m['features'][i]['properties']['id'] === gid4grid[j]) {
-  //       selected_grid.push(grid5m['features'][i]);
-  //     }
-  //   }
-  // }
 
-  console.log('selected_grid: ', selected_grid);
-  tempgrid['features'] = selected_grid;
-  console.log('tempgrid: ', tempgrid);
-
-  const temptemp = [];
-  temptemp.push(tempgrid);
-  // console.log('temptemp[0]: ', temptemp[0]);
+  tempgrid['features'] = selected_grid; // 선택된 격자 좌표 배열을 features에 추가 -> geojson 파일 형식으로 변환
 
   // (1) 아이디별 value 저장 - total
   for (let i = 0; i < robots.length; i++) {
@@ -322,13 +178,12 @@ export default function Map() {
     }
   }
 
-  console.log('values: ', values); // gid별 통행량
+  // [gid별 통행량] - values:  {3m_15841: 1, 3m_15842: 1, 3m_16225: 1, 3m_16226: 1, 3m_16227: 1, …} 
 
-  // grid - id popup (팝업 숨겨둠)
+  // grid - id popup
   const onEachFeature = (feature, layer, e) => {
     const gid = feature.properties.id;
-    let crosspoint = values[gid];
-
+    let crosspoint = values[gid]; // 위에서 구한 values 객체를 통해 격자 아이디별 통행량 계산
     layer.bindPopup(
       '<div>gid: ' + gid + '</div>'
     );
@@ -337,7 +192,7 @@ export default function Map() {
   // gid 배열 전달되었을 때 격자에 통행량 표시하는 함수
   const gridStyle35 = (feature) => {
     let gid = feature.properties.id;
-    const confirmed = values[gid];
+    const confirmed = values[gid]; // 톻행량
 
     if (!confirmed) {
       return {
@@ -425,11 +280,9 @@ export default function Map() {
     }
   }
 
-  const handlePopupClose = (e) => {
-    setDisplayCarousel('flex')
-  }
-
-  // Marker Icon
+  // +++++++++++++++++++++++++++++++++++++++++++++
+  //      Marker Icon - 장애물 데이터 표시
+  // +++++++++++++++++++++++++++++++++++++++++++++
   const [selectedIndex, setSelectedIndex] = useState(0); // value to catch active marker index
 
   // PathContainer에서 호출한 차량(로봇) 아이디 배열을 읽어옴 (from PathContainer.js)
@@ -437,7 +290,7 @@ export default function Map() {
     setSelectedIndex(selected);
   };
 
-  const createIcon = (url, size, center=[0,0]) => {
+  const createIcon = (url, size, center = [0, 0]) => {
     return new L.Icon({
       iconUrl: url,
       iconAnchor: center,
@@ -445,26 +298,23 @@ export default function Map() {
     });
   }
 
-  const getMarkerIcon = (index) => { // [x, y], 숫자가 클수록 왼쪽&위로 이동
-    if (displayCarousel === 'hidden')
-      return createIcon(icon, '16px', [8, 10]);
-    else if(index === selectedIndex)
-      return createIcon(iconActive, '32px', [14, 31]);
-
-    return createIcon(icon, '16px', [8, 10]);
+  // 마커 아이콘 변경 (클릭되었거나 carousel을 통해 선택된 지점의 아이콘을 location marker로 변경함)
+  const getMarkerIcon = (index) => { // [x, y], 숫자가 클수록 왼쪽&위로 이동 (마커 이미지 변경 시 좌표 값 재조정 필요)
+    if (displayCarousel === 'hidden') return createIcon(icon, '16px', [8, 10]);
+    else if (index === selectedIndex) return createIcon(iconActive, '32px', [14, 31]);
+    else return createIcon(icon, '16px', [8, 10]);
   }
 
   return (
     <div className="w-full">
       <div className="flex">
-        <div id='map' className='w-2/3' style={{ height: '1080px' }}>
+        <div id='map' className='w-2/3 h-[880px]'>
           <MapContainer
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
             scrollWheelZoom={true}
             doubleClickZoom={true}
-            style={{ height: "100%", width: "100%" }}
-            popupclose={handlePopupClose}
+            style={{ height: "100%", width: "100%" }} // className으로 h-full, w-full 지정 시 지도 제대로 표출되지 않음
           >
             {/* 클릭한 지점 좌표, current zoom level 콘솔 출력 */}
             <LocationFinder />
@@ -474,18 +324,20 @@ export default function Map() {
               maxZoom={30} // 20~30레벨은 19레벨 화질 그대로 화면만 zoom in
               maxNativeZoom={19} // 실제로 확대되는 범위
             />
+            {/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                LayersControl: 지도 우측 상단 레이어 선택 패널
+                - collapsed (default: true -> false로 둘 경우 펼쳐보기 상태로 고정) 
+                
+                LayersControl.Overlay: 개별 레이어 (체크박스로 선택)
+                - name: 체크박스 라벨명
+
+                LayerGroup: 레이어 내 다중 경로/컴포넌트/geojson 포함될 경우 그룹화하여 하나의 레이어 안에 통합
+                ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */}
             <LayersControl collapsed={false}>
-              {/* <LayersControl.Overlay name="1m 격자">
-                <GeoJSON
-                  data={seouluniv_polygon}
-                  onEachFeature={onEachFeature}
-                  style={gridStyle}
-                />
-              </LayersControl.Overlay> */}
               <LayersControl.Overlay name="3m 격자">
                 <GeoJSON
                   data={temp3grid}
-                  // onEachFeature={onEachFeature}
+                  onEachFeature={onEachFeature}
                   style={gridStyle35}
                 />
               </LayersControl.Overlay>
@@ -493,49 +345,41 @@ export default function Map() {
                 <LayerGroup>
                   <GeoJSON
                     data={temp5grid}
-                    // onEachFeature={onEachFeature}
+                    onEachFeature={onEachFeature}
                     style={gridStyle35}
                   />
                 </LayerGroup>
               </LayersControl.Overlay>
-              {/* <LayersControl.Overlay name="10m 격자">
-                <GeoJSON
-                  data={seouluniv_10m}
-                  onEachFeature={onEachFeature}
-                  style={gridStyle}
-                >
-                </GeoJSON>
-              </LayersControl.Overlay> */}
               <LayersControl.Overlay name="사고 발생 지점">
                 <LayerGroup>
-                  {     
+                  {
                     markerData.length > 0 &&
                     markerData.map((position, i) => (
-                    <Marker
-                      key={i} 
-                      position={position} // CircleMarker: position => center
-                      icon={getMarkerIcon(i)}
-                      // pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }} // CircleMarker
-                      // radius={5} // CircleMarker
-                      eventHandlers={{
-                        click: (e) => {
-                          setDisplayCarousel('flex');
-                          setDisplayContainer('hidden');
-                          setSelectedIndex(i); // change active icon style
-                        },
-                        popupclose: (e) => {
-                          setDisplayCarousel('hidden');
-                          setDisplayContainer('');
-                        }
-                      }}
-                    >
-                      <Popup
-                        closeButton={false}
-                        className='hidden'
+                      <Marker // icon 적용하지 않을 경우 CircleMarker로 변경해도 무방
+                        key={i}
+                        position={position} // CircleMarker: position => center로 변경 필요
+                        icon={getMarkerIcon(i)}
+                        // pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }} // CircleMarker
+                        // radius={5} // CircleMarker
+                        eventHandlers={{
+                          click: (e) => {
+                            setDisplayCarousel('flex'); // 마커 클릭 시 이미지 캐러셀 표시
+                            setDisplayContainer('hidden'); // 마커 클릭 시 경로 데이터 컨테이너 숨김
+                            setSelectedIndex(i); // change active icon style
+                          },
+                          popupclose: (e) => { // 마커 비활성화 순간을 포착하기 위해 popupclose 이벤트에 연결함
+                            setDisplayCarousel('hidden'); // 마커 비활성화 시 이미지 캐러셀 숨김
+                            setDisplayContainer(''); // 마커 비활성화 시 경로 데이터 컨테이너 표시
+                          }
+                        }}
                       >
-                        사고 발생 지점 ({i+1})
-                      </Popup>
-                    </Marker>
+                        <Popup // 마커 클릭 시 표시되는 팝업
+                          closeButton={false} // 팝업 말풍선 내 닫기 버튼 표시 여부 (default: true)
+                          className='hidden' // popupclose 이벤트를 잡아내야 하므로 생성 후 숨겨둠
+                        >
+                          사고 발생 지점 ({i + 1})
+                        </Popup>
+                      </Marker>
                     ))
                   }
                 </LayerGroup>
@@ -552,23 +396,23 @@ export default function Map() {
                   positions={selected_polylines[polyline]}
                   eventHandlers={{
                     click: (e) => {
-                      e.target.openPopup(e.latlng);
-                      e.target.bringToFront();
+                      e.target.openPopup(e.latlng); // 선택한 경로 위 클릭된 지점에서 팝업 열기
+                      e.target.bringToFront(); // 선택된 경로를 일시적으로 맨 앞으로 오도록 함
                     },
-                    mouseover: (e) => {
+                    mouseover: (e) => { // 마우스 오버 시 선택된 경로에 대해 포커싱 효과 적용 - 굵은 실선
                       e.target.setStyle({
                         weight: 4,
-                        // color: '#FFD600',
                         dashArray: '',
                       });
                       e.target.bringToFront();
                     },
-                    mouseout: (e) => {
+                    mouseout: (e) => { // 마우스 오버 해제 시 원래 스타일로 변경
                       e.target.setStyle(lineOptions[selected_polylines[polyline][0][0].toString()[9]]);
                       e.target.bringToBack();
                     }
                   }}
                 >
+                  {/* 경로 클릭 시 표시되는 팝업 */}
                   <Popup closeButton={false}>
                     <div className="flex items-center">
                       {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
@@ -588,13 +432,17 @@ export default function Map() {
                 </Polyline>
               ))
             }
+            {/* 범례 - 지도 우측 하단 */}
             {/* <Legend position="bottomright" /> */}
           </MapContainer>
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
+          {/* 차트 컨테이너 */}
           {/* <Dashboard display={display} /> */}
+          {/* 이미지 캐러셀 */}
           <Carousel display={displayCarousel} marker={selectedIndex} getCurrentIndex={getCurrentIndex} />
-          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} setAllRobotIDs={setAllRobotIDs}/>
+          {/* 경로 데이터 컨테이너 */}
+          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} setAllRobotIDs={setAllRobotIDs} />
         </div>
       </div>
     </div>

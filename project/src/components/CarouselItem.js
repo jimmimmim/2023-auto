@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 export default function CarouselItem({ img, setSelectedImg, currentImg }) {
 
@@ -10,17 +10,15 @@ export default function CarouselItem({ img, setSelectedImg, currentImg }) {
     }
 
     return (
-        <>
-            <label className={`${width} h-[54px] mx-[4px] bg-black cursor-pointer hover:bg-gray-800 overflow-hidden`}>
-                <input
-                    type="radio" name='slider'
-                    className='hidden img-slider-btn'
-                    value={img}
-                    onChange={handleChange}
-                    checked={img === currentImg}
-                />
-                <img src={img} className='w-[84px] h-[54px] object-cover' />
-            </label>
-        </>
+        <label className={`${width} h-[54px] mx-[4px] bg-black cursor-pointer hover:bg-gray-800 overflow-hidden`}>
+            <input
+                type="radio" name='slider'
+                className='hidden img-slider-btn'
+                value={img}
+                onChange={handleChange}
+                checked={img === currentImg}
+            />
+            <img src={img} className='w-[84px] h-[54px] object-cover' />
+        </label>
     );
 }

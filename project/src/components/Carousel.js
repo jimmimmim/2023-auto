@@ -6,20 +6,15 @@ import markerData from '../data/markerdata.json';
 
 export default function Carousel({ display, marker, getCurrentIndex }) {
 
-  // const [images, setImages] = useState([image1, image2, image3, image4, image5]); // 장애물 이미지 배열 - 이후 api를 통해 받아오는 것으로 수정
   const [images, setImages] = useState([]); // 장애물 이미지 배열
   const [currentIndex, setCurrentIndex] = useState(0); // 현재 이미지 인덱스
   const [currentImg, setCurrentImg] = useState(images[0]); // 현재 선택된 이미지 - 큰 화면
-
-  const [move, setMove] = useState('');
-  const currentItem = useRef(); // 슬라이드 아이템 좌우 이동 위한 시작 좌표값
 
   // images from json file
   useEffect(() => {
     for (let i = 0; i < markerData.length; i++) {
       images.push(markerData[i]['url']);
     }
-    console.log(images);
   }, [images])
 
   // read selected image from CarouselItem.js
@@ -28,11 +23,12 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
     return selected;
   };
 
-  // image slider buttons
+  // image carousel button ( > )
   const onIncrease = () => {
     (currentIndex < images.length - 1) ? setCurrentIndex(idx => idx + 1) : setCurrentIndex(0);
   };
 
+  // image carousel button ( < )
   const onDecrease = () => {
     (currentIndex !== 0) ? setCurrentIndex(idx => idx - 1) : setCurrentIndex(images.length - 1);
   };
@@ -42,13 +38,10 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
     setCurrentIndex(marker);
   }, [marker])
 
-  // set current image depend on current index (handled by slider buttons)
-  useEffect(() => {
-    setCurrentImg(images[currentIndex]);
-  }, [currentIndex])
-
+  // set current image by current index (handled by slider buttons)
   // send current index from Carousel.js to Map.js
   useEffect(() => {
+    setCurrentImg(images[currentIndex]);
     getCurrentIndex(currentIndex);
   }, [currentIndex])
 
@@ -58,7 +51,7 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
     if (markerData[images.indexOf(currentImg)]['lat'] && markerData[images.indexOf(currentImg)]['lon']) {
       imglat = markerData[images.indexOf(currentImg)]['lat'];
       imglon = markerData[images.indexOf(currentImg)]['lon'];
-    } 
+    }
   }
 
   return (
@@ -73,7 +66,7 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
             <div className='w-[6px] h-[6px] mr-1 bg-red-600 rounded-full'></div>
             <span className='text-[14px]'>
               {imglat}, {imglon}
-              </span>
+            </span>
           </div>
           <div>
             <span>{images.indexOf(currentImg) + 1}</span>
@@ -93,14 +86,13 @@ export default function Carousel({ display, marker, getCurrentIndex }) {
             {/* sliding window (displayed area) - short */}
             <div className='flex justify-center w-full overflow-hidden' id='slide-window'>
               {/* actual images - longer */}
-              <div className={`flex ${move}`} id='image-slider'>
+              <div className={`flex`} id='image-slider'>
                 {images.map((img, i) => (
                   <CarouselItem key={i} img={img} setSelectedImg={setSelectedImg} currentImg={currentImg} />
                 ))}
               </div>
             </div>
             <button
-              // ref={currentItem}
               className='px-3 cursor-pointer'
               onClick={() => { onIncrease(); }}
             >

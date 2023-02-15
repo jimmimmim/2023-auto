@@ -4,9 +4,6 @@ import Chart01 from './Chart01';
 import Chart02 from './Chart02';
 
 export default function Dashboard({display}) {
-
-  // const display = ['flex', 'hidden'];
-  console.log('display: ', display);
   
   return (
     <div className={`${display} px-6 pb-6`}>

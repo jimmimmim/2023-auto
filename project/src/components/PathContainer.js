@@ -13,20 +13,7 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
   const [selected, setSelected] = useState([]);   // selected robots
   const [selectedData, setSelectedData] = useState({});   // selected data
 
-  const [checkedAll, setCheckedAll] = useState(true); // 선택 초기화 버튼 (이후 전체선택/전체해제로 수정)
-
   axios.defaults.withCredentials = true;
-
-  // CSS styles - 전체선택
-  let componentClass = ""; // change div background color depend on checkedAll (boolean)
-  let checkboxStyle = ""; // custom checkbox
-  let customcheckboxStyle = ""; // custom checkbox
-  if (checkedAll) {
-    componentClass = "bg-[#2D4A65]";
-    customcheckboxStyle = 'hidden';
-  } else {
-    checkboxStyle = 'hidden';
-  }
 
   // GET
   useEffect(() => {
@@ -90,7 +77,6 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
       setRobots(robot_items);
     }
   }, [robot_items])
-  // }, [])
 
   // remove items
   const removeItem = (id) => {
@@ -100,22 +86,6 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
       }),
     );
   };
-
-  // uncheck - used only in buttons
-  const uncheckItem = (id) => {
-    const copyRobots = [...robots];
-    const modifiedRobots = copyRobots.map(robot => {
-      if (id === robot.id) {
-        robot.checked = !robot.checked;
-        if (!robot.checked) {
-          removeItem(robot.id);
-        }
-      }
-      return robot;
-    });
-    setRobots(modifiedRobots);
-  };
-
 
   // checkbox - 선택 및 해제
   const handleChange = id => {
@@ -133,12 +103,6 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
     });
     setRobots(modifiedRobots);
   };
-
-  // checkbox - 전체 선택
-  const handleChangeAll = () => {
-    setSelected([]); // 전체 해제
-    console.log('checkedAll: ', checkedAll)
-  }
 
   // send selected robot lists from PathContainer.js to Map.js
   useEffect(() => {
@@ -176,11 +140,6 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
   console.log('selected: ', selected);
   console.log('selectedData: ', selectedData); // delay
 
-  // 하나라도 체크되어 있으면 선택 초기화 버튼 활성화
-  useEffect(() => {
-    (selected.length > 0) ? setCheckedAll(true) : setCheckedAll(false)
-  }, [selected])
-
   return (
     <div className={`justify-center ${display} px-6 text-lg text-left`}>
       <div className='flex items-center justify-between bg-[#1F2834]'>
@@ -193,20 +152,6 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
           ))
         }
       </div>
-      {/* only for check selected list */}
-      {/* <div className='flex flex-wrap justify-start px-6 min-w-[260px] bg-[#1F2834]'>
-        {
-          // sort by robot name
-          selected.sort().map((v, i) => (
-          // selected.map((v, i) => (
-            <button 
-            key={i} 
-            className={`px-3 py-1 mr-3 my-2 text-sm text-white rounded-full bg-gray-700 hover:bg-gray-900 ${componentClass}`}
-            onClick={() => {uncheckItem(v);}}
-            >{v}</button>
-          ))
-        }
-        </div> */}
     </div>
 
   );
