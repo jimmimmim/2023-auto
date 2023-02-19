@@ -54,6 +54,7 @@
 
 /* +++++++++++++++++++++++++++++++++++++ */
 /* React Leaflet Component Custom Style */
+/* +++++++++++++++++++++++++++++++++++++ */
 
 .leaflet-container {
   height: 400px;
@@ -87,10 +88,6 @@
 }
 
 /* +++++++++++++++++++++++++++++++++++++++++ */
-/* +++++++++++++++++++++++++++++++++++++++++ */
-
-
-
 /* #checkitem-container > input {
   opacity: 0;
   height: 0;
@@ -100,6 +97,8 @@
 #checkitem-container > input:checked ~ .custom-check {
   background-color: #2196F3;
 } */
+
+
 
 /* scroll bar */
 
@@ -117,4 +116,56 @@
 
 ::-webkit-scrollbar-track {
 	background-color: rgb(31, 40, 52);
+}
+
+/* Circle Point */
+
+.color0 {
+  background-color: #3e400e;
+  border: 1px solid #3e400e;
+}
+
+.color1 {
+  background-color: #ecb700;
+  border: 1px solid #ecb700;
+}
+
+.color2 {
+  background-color: #1A81EC;
+  border: 1px solid #1A81EC;
+}
+
+.color3 {
+  background-color: #245D6B;
+  border: 1px solid #245D6B;
+}
+
+.color4 {
+  background-color: #E28869;
+  border: 1px solid #E28869;
+}
+
+.color5 {
+  background-color: #288994;
+  border: 1px solid #288994;
+}
+
+.color6 {
+  background-color: #4A686A;
+  border: 1px solid #4A686A;
+}
+
+.color7 {
+  background-color: #C6267B;
+  border: 1px solid #C6267B;
+}
+
+.color8 {
+  background-color: #9D4ED5;
+  border: 1px solid #9D4ED5;
+}
+
+.color9 {
+  background-color: #F76301;
+  border: 1px solid #F76301;
 }

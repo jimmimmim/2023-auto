@@ -18,14 +18,13 @@ import PathContainer from "../components/PathContainer";
 import Carousel from "../components/Carousel";
 import LocationFinder from "../components/LocationFinder";
 import MapZoomComponent from '../components/MapZoomComponent';
-// import Dashboard from "../components/Dashboard"; // chart dashboard
 // import Legend from "../components/Legend";
 
 // **** Files ***** 
 import markerData from '../data/markerdata.json'; // 장애물 데이터 (속성정보 포함)
-import selectedjson from '../data/selected.json'; // 경로 데이터 -> API로 받아오는 것으로 수정
-import temp3grid from '../data/temp3grid.json'; // 3m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 
-import temp5grid from '../data/temp5grid.json'; // 5m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정
+import selectedjson from '../data/selected.json'; // 경로 데이터 -> API로 받아오는 것으로 수정 필요
+import temp3grid from '../data/temp3grid.json'; // 3m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 필요 
+import temp5grid from '../data/temp5grid.json'; // 5m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 필요
 
 import icon from '../assets/icons/circle.png'; // default marker icon
 import iconActive from '../assets/icons/placeholder.png'; // active(current) marker icon
@@ -33,7 +32,7 @@ import iconActive from '../assets/icons/placeholder.png'; // active(current) mar
 export default function Map() {
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //                        [ 격자 (Grid) 레이어 표시를 위한 기본 Geojson 템플릿 ]
+  //                 [ 격자 (Grid) 레이어 표시를 위한 기본 Geojson 템플릿 (현재 미사용중)]
   //      geojson 형식을 맞춰줌 - 유효한 격자 polygon만 필터링하여 tempgrid 내 features 배열에 추가됨
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -73,25 +72,6 @@ export default function Map() {
       })
   }, []);
 
-  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //               [ 경로 (polyline) 스타일 ]
-  //      - 경로 개수에 상관없이 총 10개 필요 (0~9)
-  //      - weight: 선 굵기 / color: 선 색상 / fillColor: 색상 (미지정 시 color 색상과 동일하게 적용)
-  //      - dashArray: 점선 (기본값은 null, '' 전달 시 실선)
-  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  const lineOptions = [
-    { weight: 3, color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
-    { weight: 3, color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
-    { weight: 3, color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
-    { weight: 3, color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
-    { weight: 3, color: '#E28869', fillColor: '#E28869', dashArray: 4, },
-    { weight: 3, color: '#288994', fillColor: '#288994', dashArray: 4, },
-    { weight: 3, color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
-    { weight: 3, color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
-    { weight: 3, color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
-    { weight: 3, color: '#F76301', fillColor: '#F76301', dashArray: 4, },
-  ];
-
   // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
   const selectedRobots = selected => {
     setSelectedCars(selected);
@@ -113,7 +93,8 @@ export default function Map() {
 
   const selected_polylines = {};
 
-  // selectedPolyline 대신 selectedjson
+  // selectedPolyline 대신 selectedjson으로 대체함
+  console.log('selectedPolyline: ', selectedPolyline)
   for (let i = 0; i < selectedCars.length; i++) {
 
     let outer = [];
@@ -127,9 +108,9 @@ export default function Map() {
     }
   }
 
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   //        Grid Layer - 통행량, 장애물 데이터 표출을 위해 geojson 형식 격자 레이어 추가 
-  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
   let values = {}; // 격자 아이디별 통행량(지나가는 선 개수) 담을 딕셔너리
@@ -143,9 +124,9 @@ export default function Map() {
         gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
         gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
       }
+      gids = [...new Set(gids.sort())]; // 차량 내 격자아이디 중복 제거, 아이디순 정렬(편의상)
+      robots.push(gids);
     }
-    gids = [...new Set(gids.sort())]; // 차량 내 격자아이디 중복 제거, 아이디순 정렬(편의상)
-    robots.push(gids);
   }
 
   console.log('robots: ', robots); // delay
@@ -178,12 +159,16 @@ export default function Map() {
     }
   }
 
+  console.log('values: ', values);
+  console.log('grid3m: ', grid3m);
+  console.log('grid5m: ', grid5m);
+
   // [gid별 통행량] - values:  {3m_15841: 1, 3m_15842: 1, 3m_16225: 1, 3m_16226: 1, 3m_16227: 1, …} 
 
   // grid - id popup
   const onEachFeature = (feature, layer, e) => {
     const gid = feature.properties.id;
-    let crosspoint = values[gid]; // 위에서 구한 values 객체를 통해 격자 아이디별 통행량 계산
+    let crosspoint = values[gid]; // 위에서 구한 values 객체를 통해 격자 아이디별 통행량 읽어옴
     layer.bindPopup(
       '<div>gid: ' + gid + '</div>'
     );
@@ -211,28 +196,28 @@ export default function Map() {
       }
     } else if (confirmed === 2) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1871D9',
         fillcolor: '#1871D9',
         fillOpacity: 0.3
       }
     } else if (confirmed === 3) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1871D9',
         fillcolor: '#1871D9',
         fillOpacity: 0.5
       }
     } else if (confirmed === 4) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1871D9',
         fillcolor: '#1871D9',
         fillOpacity: 0.7
       }
     } else if (confirmed === 5) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1871D9',
         fillcolor: '#1871D9',
         fillOpacity: 0.9
@@ -240,7 +225,7 @@ export default function Map() {
     }
     else if (confirmed === 6) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1861d9',
         fillcolor: '#1861d9',
         fillOpacity: 0.7
@@ -248,7 +233,7 @@ export default function Map() {
     }
     else if (confirmed === 7) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1861d9',
         fillcolor: '#1861d9',
         fillOpacity: 0.7
@@ -256,7 +241,7 @@ export default function Map() {
     }
     else if (confirmed === 8) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1861d9',
         fillcolor: '#1861d9',
         fillOpacity: 0.8
@@ -264,7 +249,7 @@ export default function Map() {
     }
     else if (confirmed === 9) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1861d9',
         fillcolor: '#1861d9',
         fillOpacity: 0.8
@@ -272,7 +257,7 @@ export default function Map() {
     }
     else if (confirmed === 10) {
       return {
-        weight: 1, // stroke width (default: 3)
+        weight: 1,
         color: '#1861d9',
         fillcolor: '#1861d9',
         fillOpacity: 0.9
@@ -280,9 +265,35 @@ export default function Map() {
     }
   }
 
+  // // Polyline Style 지정 위한 인덱스 (0~9)
+  // const [styleIndex, setStyleIndex] = useState(0);
+  // setStyleIndex(selected_polylines[polyline][0][0].toString()[9]);
+
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //                      [ 경로 (polyline) 스타일 ]
+  //      - 경로 개수에 상관없이 총 10개 필요 (0~9)
+  //      - weight: 선 굵기 / color: 선 색상 / fillColor: 색상 (미지정 시 color 색상과 동일하게 적용)
+  //      - dashArray: 점선 (기본값은 null, '' 전달 시 실선)
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  const lineOptions = [
+    { weight: 3, color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
+    { weight: 3, color: '#ecb700', fillColor: '#ecb700', dashArray: 4, },
+    { weight: 3, color: '#1A81EC', fillColor: '#1A81EC', dashArray: 4, },
+    { weight: 3, color: '#245D6B', fillColor: '#245D6B', dashArray: 4, },
+    { weight: 3, color: '#E28869', fillColor: '#E28869', dashArray: 4, },
+    { weight: 3, color: '#288994', fillColor: '#288994', dashArray: 4, },
+    { weight: 3, color: '#4A686A', fillColor: '#4A686A', dashArray: 4, },
+    { weight: 3, color: '#C6267B', fillColor: '#C6267B', dashArray: 4, },
+    { weight: 3, color: '#9D4ED5', fillColor: '#9D4ED5', dashArray: 4, },
+    { weight: 3, color: '#F76301', fillColor: '#F76301', dashArray: 4, },
+  ];
+  
+
   // +++++++++++++++++++++++++++++++++++++++++++++
-  //      Marker Icon - 장애물 데이터 표시
+  //        Marker Icon - 장애물 데이터 표시
   // +++++++++++++++++++++++++++++++++++++++++++++
+
   const [selectedIndex, setSelectedIndex] = useState(0); // value to catch active marker index
 
   // PathContainer에서 호출한 차량(로봇) 아이디 배열을 읽어옴 (from PathContainer.js)
@@ -325,30 +336,30 @@ export default function Map() {
               maxNativeZoom={19} // 실제로 확대되는 범위
             />
             {/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                LayersControl: 지도 우측 상단 레이어 선택 패널
-                - collapsed (default: true -> false로 둘 경우 펼쳐보기 상태로 고정) 
-                
-                LayersControl.Overlay: 개별 레이어 (체크박스로 선택)
-                - name: 체크박스 라벨명
+                  LayersControl: 지도 우측 상단 레이어 선택 패널
+                  - collapsed (default: true -> false로 둘 경우 펼쳐보기 상태로 고정) 
+                  
+                  LayersControl.Overlay: 개별 레이어 (체크박스로 선택)
+                  - name: 체크박스 라벨명
 
-                LayerGroup: 레이어 내 다중 경로/컴포넌트/geojson 포함될 경우 그룹화하여 하나의 레이어 안에 통합
+                  LayerGroup: 레이어 내 다중 경로/컴포넌트/geojson 포함될 경우 그룹화하여 하나의 레이어 안에 통합
                 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */}
             <LayersControl collapsed={false}>
               <LayersControl.Overlay name="3m 격자">
                 <GeoJSON
                   data={temp3grid}
+                  // data={grid3m}
                   onEachFeature={onEachFeature}
                   style={gridStyle35}
                 />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="5m 격자">
-                <LayerGroup>
-                  <GeoJSON
-                    data={temp5grid}
-                    onEachFeature={onEachFeature}
-                    style={gridStyle35}
-                  />
-                </LayerGroup>
+                <GeoJSON
+                  data={temp5grid}
+                  // data={grid5m}
+                  onEachFeature={onEachFeature}
+                  style={gridStyle35}
+                />
               </LayersControl.Overlay>
               <LayersControl.Overlay name="사고 발생 지점">
                 <LayerGroup>
@@ -362,14 +373,14 @@ export default function Map() {
                         // pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 1 }} // CircleMarker
                         // radius={5} // CircleMarker
                         eventHandlers={{
-                          click: (e) => {
-                            setDisplayCarousel('flex'); // 마커 클릭 시 이미지 캐러셀 표시
-                            setDisplayContainer('hidden'); // 마커 클릭 시 경로 데이터 컨테이너 숨김
+                          click: (e) => { // 마커 클릭 시
+                            setDisplayCarousel('flex');
+                            setDisplayContainer('hidden'); 
                             setSelectedIndex(i); // change active icon style
                           },
-                          popupclose: (e) => { // 마커 비활성화 순간을 포착하기 위해 popupclose 이벤트에 연결함
-                            setDisplayCarousel('hidden'); // 마커 비활성화 시 이미지 캐러셀 숨김
-                            setDisplayContainer(''); // 마커 비활성화 시 경로 데이터 컨테이너 표시
+                          popupclose: (e) => { // 마커 비활성화 순간을 포착하기 위해 popupclose 이벤트에 연결
+                            setDisplayCarousel('hidden'); 
+                            setDisplayContainer(''); 
                           }
                         }}
                       >
@@ -397,7 +408,7 @@ export default function Map() {
                   eventHandlers={{
                     click: (e) => {
                       e.target.openPopup(e.latlng); // 선택한 경로 위 클릭된 지점에서 팝업 열기
-                      e.target.bringToFront(); // 선택된 경로를 일시적으로 맨 앞으로 오도록 함
+                      e.target.bringToFront(); 
                     },
                     mouseover: (e) => { // 마우스 오버 시 선택된 경로에 대해 포커싱 효과 적용 - 굵은 실선
                       e.target.setStyle({
@@ -416,6 +427,8 @@ export default function Map() {
                   <Popup closeButton={false}>
                     <div className="flex items-center">
                       {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
+                      {/* Circle Point */}
+                      <div className={`w-2 h-2 mb-1 mr-2 rounded-full color${selected_polylines[polyline][0][0].toString()[9]}`}></div>
                       <div className="mb-1 text-sm font-extrabold">
                         Robot_{robotids.indexOf(polyline) + 1}
                       </div>
@@ -437,8 +450,6 @@ export default function Map() {
           </MapContainer>
         </div>
         <div id='board' className="w-1/3 bg-[#07111E] min-w-[260px]">
-          {/* 차트 컨테이너 */}
-          {/* <Dashboard display={display} /> */}
           {/* 이미지 캐러셀 */}
           <Carousel display={displayCarousel} marker={selectedIndex} getCurrentIndex={getCurrentIndex} />
           {/* 경로 데이터 컨테이너 */}

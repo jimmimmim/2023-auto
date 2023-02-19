@@ -54,7 +54,7 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
     console.log('data[0]: ', data[0]);
   }
 
-  // 로봇 이름 부여
+  // 로봇 이름, 체크박스 전달값
   for (let i = 0; i < robotids.length; i++) {
     const robot_info = {};
 
@@ -117,14 +117,9 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
         }
       }
     }
-    selectedPolylines(selectedData);
-    console.log(selectedData);
+    selectedPolylines(selectedData); // send selected path data from PathContainer.js to Map.js       // delay
+    console.log('selectedData: ' , selectedData); // timely
   }, [selected.length, data[0]])
-
-  // send selected path data from PathContainer.js to Map.js
-  useEffect(() => {
-    selectedPolylines(selectedData);
-  }, [selectedData])
 
   // send robot ids from PathContainer.js to Map.js
   useEffect(() => {
@@ -134,11 +129,9 @@ export default function PathContainer({ selectedRobots, selectedPolylines, displ
   // 선택된 개별 차량(로봇) 아이디를 읽어옴
   const selectedID = selected => {
     setID(selected);
-    return selected;
   };
 
   console.log('selected: ', selected);
-  console.log('selectedData: ', selectedData); // delay
 
   return (
     <div className={`justify-center ${display} px-6 text-lg text-left`}>
