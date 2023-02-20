@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 
-export default function PathHistory({ robot, handleChange, selectedID }) {
-
-  const [id, setID] = useState('');
+export default function PathHistory({ robot, handleChange }) {
 
   // CSS styles
   let componentClass = ""; // change div background color depend on robot.checked (boolean)
@@ -15,28 +13,12 @@ export default function PathHistory({ robot, handleChange, selectedID }) {
     checkboxStyle = 'hidden';
   }
 
-  // check whether robot.checked is true or false
-  const ref = useRef(null);
-  const handleClick = () => {
-    if (ref.current.checked) {
-      //   console.log(robot.id, 'unchecked');
-    } else {
-      //   console.log(robot.id, 'checked');
-      setID(robot.id);
-    }
-  };
-
-  // send selected robot id from PathHistory.js to PathContainer.js
-  useEffect(() => {
-    selectedID(id);
-  }, [id])
-
   return (
     <div
       className={`flex items-center cursor-pointer justify-between hover:bg-gray-900 pl-6 pr-2
       ${componentClass}`}
       id='checkitem-container'
-      onClick={() => { handleChange(robot.id); handleClick(); }}
+      onClick={() => { handleChange(robot.id); }}
     >
       <div className='min-w-full py-2 pr-2 border-b border-[#293C4E]'>
         <div className='flex items-center justify-between'>
@@ -50,13 +32,11 @@ export default function PathHistory({ robot, handleChange, selectedID }) {
               type="checkbox"
               className={`${checkboxStyle}`}
               id={`check-${robot.id}`}
-              ref={ref}
               name={robot.id}
               checked={robot.checked}
               onChange={() => handleChange(robot.id)}
               onClick={e => {
                 e.stopPropagation();
-                // handleClick();
               }}
             />
           </div>

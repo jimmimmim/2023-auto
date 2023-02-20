@@ -22,7 +22,6 @@ import MapZoomComponent from '../components/MapZoomComponent';
 
 // **** Files ***** 
 import markerData from '../data/markerdata.json'; // 장애물 데이터 (속성정보 포함)
-import selectedjson from '../data/selected.json'; // 경로 데이터 -> API로 받아오는 것으로 수정 필요
 import temp3grid from '../data/temp3grid.json'; // 3m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 필요 
 import temp5grid from '../data/temp5grid.json'; // 5m 기준 전체 격자 데이터 -> API로 받아오는 것으로 수정 필요
 
@@ -32,8 +31,8 @@ import iconActive from '../assets/icons/placeholder.png'; // active(current) mar
 export default function Map() {
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //                 [ 격자 (Grid) 레이어 표시를 위한 기본 Geojson 템플릿 (현재 미사용중)]
-  //      geojson 형식을 맞춰줌 - 유효한 격자 polygon만 필터링하여 tempgrid 내 features 배열에 추가됨
+  //                 [ 격자 (Grid) 레이어 표시를 위한 기본 Geojson 템플릿 (현재 미사용)]
+  //      geojson 형식을 따름 - 유효한 격자 polygon만 필터링하여 tempgrid 내 features 배열에 추가됨
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   const tempgrid = {
@@ -43,28 +42,48 @@ export default function Map() {
   };
 
   const [robotids, setRobotIDs] = useState([]); // PathContainer에서 호출한 로봇 아이디 배열 (API 수정되어 Robot별 name 자동 부여되면 필요 없어짐)
-  const [selectedCars, setSelectedCars] = useState([]);
-  const [selectedPolyline, setSelectedPolyline] = useState({}); // 한 번 이상 호출된 경로 정보를 담는 객체 (선택 해제되어도 삭제하지 않음)
-
+  const [selectedCars, setSelectedCars] = useState([]); // 현재 선택된 차량 (from PathContainer.js)
+  
   const [grid3m, setGrid3m] = useState(tempgrid); // 통행량이 1 이상인 3m 격자 생성 위한 템플릿
   const [grid5m, setGrid5m] = useState(tempgrid); // 통행량이 1 이상인 5m 격자 생성 위한 템플릿
+  const [data, setData] = useState({}); // 전체 경로 정보 (raw data)
+  const locationData = {}; // 경로 정보 - 화면 표출 위해 가공
   
   const [displayCarousel, setDisplayCarousel] = useState('hidden'); // 초기 화면 - 장애물 데이터 숨김 ('hidden', 'flex')
   const [displayContainer, setDisplayContainer] = useState(''); // 초기 화면 - 경로 데이터 컨테이너 보여줌 ('', 'hidden')
 
   axios.defaults.withCredentials = true;
 
-  // GET
   useEffect(() => {
     axios
       .all([
         axios.get('/getGeoData/3'),
-        axios.get('/getGeoData/5')
+        axios.get('/getGeoData/5'),
+        axios.get('/robot-id'),
       ])
       .then(
-        axios.spread((res3, res5) => {
+        axios.spread((res3, res5, resid) => {
           setGrid3m(res3.data);
           setGrid5m(res5.data);
+          setRobotIDs(resid.data);
+        })
+      )
+      .catch(err => {
+        console.log(err);
+      })
+  }, []);
+
+  // robot-location: 차량 고유 아이디 통해 위경도 좌표 읽어옴
+  useEffect(() => {
+    axios
+      .all([
+        axios.post("/robot-location", {
+          id: 'all'
+        }),
+      ])
+      .then(
+        axios.spread((res) => {
+          setData(res.data);
         })
       )
       .catch(err => {
@@ -77,59 +96,54 @@ export default function Map() {
     setSelectedCars(selected);
   };
 
-  // PathHistory 탭에서 선택한 차량(로봇) 배열을 읽어옴 (from PathContainer.js)
-  const selectedPolylines = selected => {
-    setSelectedPolyline(selected);
-  };
-
-  // PathContainer에서 호출한 차량(로봇) 전체 아이디 배열을 읽어옴 (from PathContainer.js)
-  const setAllRobotIDs = selected => {
-    setRobotIDs(selected);
-  };
+  for (let i = 0; i < robotids.length; i++){
+    locationData[robotids[i]] = data[i];
+  }
+  // console.log('selectedCars: ', selectedCars)
+  // console.log('locationData: ', locationData)
 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //       filtered polylines (2차원 위경도 좌표) - 선택된 경로에 포함된 위치좌표 배열 저장
+  //        filtered polylines (2차원 위경도 좌표) - 선택된 경로에 포함된 위치좌표 배열 저장
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  const selected_polylines = {};
+  const selectedPolylines = {}; // 초기화
 
-  // selectedPolyline 대신 selectedjson으로 대체함
-  console.log('selectedPolyline: ', selectedPolyline)
+  // locationData 대신 selectedjson으로 대체함
   for (let i = 0; i < selectedCars.length; i++) {
 
     let outer = [];
-    if (selectedjson[selectedCars[i]]) {
-      for (let j = 0; j < selectedjson[selectedCars[i]].length; j++) {
+    if (locationData[selectedCars[i]]) {
+      for (let j = 0; j < locationData[selectedCars[i]].length; j++) {
         let inner = [];
-        inner.push(selectedjson[selectedCars[i]][j]['lat'], selectedjson[selectedCars[i]][j]['lon']);
+        inner.push(locationData[selectedCars[i]][j]['lat'], locationData[selectedCars[i]][j]['lon']);
         outer.push(inner);
       }
-      selected_polylines[selectedCars[i]] = outer;
+      selectedPolylines[selectedCars[i]] = outer;
     }
   }
 
+  // console.log('selectedPolylines: ', selectedPolylines);
+
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  //        Grid Layer - 통행량, 장애물 데이터 표출을 위해 geojson 형식 격자 레이어 추가 
+  //          Grid Layer - 통행량, 장애물 데이터 표출을 위해 geojson 형식 격자 레이어 추가 
   // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   let robots = []; // 차량별로 지나가는 격자 아이디 배열
   let values = {}; // 격자 아이디별 통행량(지나가는 선 개수) 담을 딕셔너리
-
+  
   // 지나가는 격자 아이디 배열 생성하기
   // 3m, 5m, 10m 아이디 수집
   for (let i = 0; i < selectedCars.length; i++) {
     let gids = [];   // robots 배열의 내부 배열 담을 변수
-    if (selectedPolyline[selectedCars[i]]) {
-      for (let j = 0; j < selectedPolyline[selectedCars[i]].length; j++) {
-        gids.push(selectedPolyline[selectedCars[i]][j]['id_3m']);
-        gids.push(selectedPolyline[selectedCars[i]][j]['id_5m']);
+    if (locationData[selectedCars[i]]) {
+      for (let j = 0; j < locationData[selectedCars[i]].length; j++) {
+        gids.push(locationData[selectedCars[i]][j]['id_3m']);
+        gids.push(locationData[selectedCars[i]][j]['id_5m']);
       }
       gids = [...new Set(gids.sort())]; // 차량 내 격자아이디 중복 제거, 아이디순 정렬(편의상)
       robots.push(gids);
     }
   }
-
-  console.log('robots: ', robots); // delay
 
   // 유효한 값이 있는 격자만 선택
   let gid4grid = [] // 격자를 그리기 위한 배열 - robots 각 원소의 합집합
@@ -154,21 +168,21 @@ export default function Map() {
   // (1) 아이디별 value 저장 - total
   for (let i = 0; i < robots.length; i++) {
     for (let j = 0; j < robots[i].length; j++) {
-      if (!values[robots[i][j]]) values[robots[i][j]] = 0;
+      if (!values[robots[i][j]]) {
+        values[robots[i][j]] = 0;
+      }
       values[robots[i][j]]++;
     }
   }
 
-  console.log('values: ', values);
-  console.log('grid3m: ', grid3m);
-  console.log('grid5m: ', grid5m);
+  // console.log('grid3m: ', grid3m);
+  // console.log('grid5m: ', grid5m);
 
   // [gid별 통행량] - values:  {3m_15841: 1, 3m_15842: 1, 3m_16225: 1, 3m_16226: 1, 3m_16227: 1, …} 
 
   // grid - id popup
   const onEachFeature = (feature, layer, e) => {
     const gid = feature.properties.id;
-    let crosspoint = values[gid]; // 위에서 구한 values 객체를 통해 격자 아이디별 통행량 읽어옴
     layer.bindPopup(
       '<div>gid: ' + gid + '</div>'
     );
@@ -265,16 +279,12 @@ export default function Map() {
     }
   }
 
-  // // Polyline Style 지정 위한 인덱스 (0~9)
-  // const [styleIndex, setStyleIndex] = useState(0);
-  // setStyleIndex(selected_polylines[polyline][0][0].toString()[9]);
-
-    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   //                      [ 경로 (polyline) 스타일 ]
   //      - 경로 개수에 상관없이 총 10개 필요 (0~9)
   //      - weight: 선 굵기 / color: 선 색상 / fillColor: 색상 (미지정 시 color 색상과 동일하게 적용)
   //      - dashArray: 점선 (기본값은 null, '' 전달 시 실선)
-  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   const lineOptions = [
     { weight: 3, color: '#3e400e', fillColor: '#3e400e', dashArray: 4, },
@@ -319,7 +329,7 @@ export default function Map() {
   return (
     <div className="w-full">
       <div className="flex">
-        <div id='map' className='w-2/3 h-[880px]'>
+        <div id='map' className='w-2/3 h-[898px]'>
           <MapContainer
             center={[37.58360620664327, 127.05843925233872]} // 서울시립대
             zoom={18} // max: 18
@@ -335,7 +345,7 @@ export default function Map() {
               maxZoom={30} // 20~30레벨은 19레벨 화질 그대로 화면만 zoom in
               maxNativeZoom={19} // 실제로 확대되는 범위
             />
-            {/* +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            {/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                   LayersControl: 지도 우측 상단 레이어 선택 패널
                   - collapsed (default: true -> false로 둘 경우 펼쳐보기 상태로 고정) 
                   
@@ -398,13 +408,13 @@ export default function Map() {
             </LayersControl>
             {/* individually display selected polylines - hidden panel */}
             {
-              Object.keys(selected_polylines).length > 0 &&
-              Object.keys(selected_polylines).map((polyline, i) => (
+              Object.keys(selectedPolylines).length > 0 &&
+              Object.keys(selectedPolylines).map((polyline, i) => (
                 <Polyline
                   key={i}
                   // 경로 첫 번째 좌표에서 읽어온 숫자로 인덱스 설정 - 색상 고정
-                  pathOptions={lineOptions[selected_polylines[polyline][0][0].toString()[9]]}
-                  positions={selected_polylines[polyline]}
+                  pathOptions={lineOptions[selectedPolylines[polyline][0][0].toString()[9]]}
+                  positions={selectedPolylines[polyline]}
                   eventHandlers={{
                     click: (e) => {
                       e.target.openPopup(e.latlng); // 선택한 경로 위 클릭된 지점에서 팝업 열기
@@ -418,7 +428,7 @@ export default function Map() {
                       e.target.bringToFront();
                     },
                     mouseout: (e) => { // 마우스 오버 해제 시 원래 스타일로 변경
-                      e.target.setStyle(lineOptions[selected_polylines[polyline][0][0].toString()[9]]);
+                      e.target.setStyle(lineOptions[selectedPolylines[polyline][0][0].toString()[9]]);
                       e.target.bringToBack();
                     }
                   }}
@@ -428,7 +438,7 @@ export default function Map() {
                     <div className="flex items-center">
                       {/* <div className={`w-2 h-2 mb-1 mr-1 bg-[${lineOptions[i]['color']}] border border-[${lineOptions[i]['color']}] rounded-full`}></div> */}
                       {/* Circle Point */}
-                      <div className={`w-2 h-2 mb-1 mr-2 rounded-full color${selected_polylines[polyline][0][0].toString()[9]}`}></div>
+                      <div className={`w-2 h-2 mb-1 mr-2 rounded-full color${selectedPolylines[polyline][0][0].toString()[9]}`}></div>
                       <div className="mb-1 text-sm font-extrabold">
                         Robot_{robotids.indexOf(polyline) + 1}
                       </div>
@@ -453,7 +463,7 @@ export default function Map() {
           {/* 이미지 캐러셀 */}
           <Carousel display={displayCarousel} marker={selectedIndex} getCurrentIndex={getCurrentIndex} />
           {/* 경로 데이터 컨테이너 */}
-          <PathContainer selectedRobots={selectedRobots} selectedPolylines={selectedPolylines} display={displayContainer} setAllRobotIDs={setAllRobotIDs} />
+          <PathContainer selectedRobots={selectedRobots} display={displayContainer}/>
         </div>
       </div>
     </div>
