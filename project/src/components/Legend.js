@@ -11,7 +11,6 @@ export default function Legend ({ position }) {
 
   const legend = useMemo(
     () => (
-      // delete bg-white
       <div className="w-32 px-4 py-3">
         <div className="flex justify-between mb-3">
           <span>범례</span>
@@ -40,6 +39,5 @@ export default function Legend ({ position }) {
       <div className="leaflet-control leaflet-bar">{legend}</div>
     </div>
   )
-
 
 }

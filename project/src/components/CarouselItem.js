@@ -6,7 +6,7 @@ export default function CarouselItem({ img, setSelectedImg, currentImg }) {
     let width = ''; // 이미지 개수에 따라 가로 폭 변화
 
     const handleChange = (e) => {
-        setSelectedImg(e.target.value)
+        setSelectedImg(e.target.value);
     }
 
     return (

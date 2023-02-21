@@ -15,6 +15,5 @@ export default function LocationFinder() {
             }
         },
     });
-
     return null;
 };
