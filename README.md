@@ -18,11 +18,6 @@ npm start
 |/robot-id|GET|단순 호출 시 전체 id 값을 모두 가져옴|
 |/getGeoData/{meter}|GET|meter의 값에 따라 3m, 5m의 격자json을 반환함|
 
-* “/” (post) -  종료를 알 수 있도록, 리턴값 String으로 반환
-* “/robot-location” (post) - body 값에 { “id”: String } 으로 id값 전달, 전체 조회 시 { “id”: “all” } 로 호출
-* “/robot-id” (get) - 단순 호출시 전체 id 값을 모두 가져옴
-* “/getGeoData/{meter}” - meter의 값에 따라 3m, 5m의 격자json을 반환함
-
 ## 라이브러리
 reaflet: https://leafletjs.com/   
 react-leaflet: https://react-leaflet.js.org/
