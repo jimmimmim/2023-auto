@@ -66,6 +66,20 @@ react-leaflet: https://react-leaflet.js.org/
 
 ---
 
+## 경로 데이터
+```
+{
+        "id": "2D830BE8-0870-4AC5-AFA0-C1BDCDCA459F2023/01/02 11:27:20",
+        "id_3m": "3m_70069",
+        "id_5m": "5m_25190",
+        "idx": 85,
+        "lat": 37.5849710159,
+        "lon": 127.0605670404,
+        "seq": 1,
+        "times": "2023/01/02 11:27:20"
+}
+```
+
 ## 장애물 이미지 데이터
 ```
 {
@@ -79,7 +93,7 @@ react-leaflet: https://react-leaflet.js.org/
         "type": "image",
         "category": 0,
         "seq": 0
-},
+}
 ```
 |속성|타입|설명|
 |----|---|----|
@@ -87,6 +101,7 @@ react-leaflet: https://react-leaflet.js.org/
 |gid|String|장애물이 발견된 지점의 격자 아이디   (격자 기반으로 표시하게 될 경우 gid_3, gid_5로 변경되어야 함)|
 |lat|Number|장애물이 발견된 지점의 위도 (EPSG4326)|
 |lon|Number|장애물이 발견된 지점의 경도 (EPSG4326)|
+|times|String|장애물 데이터 수집 일시|
 |url|String|장애물 데이터 소스 링크|
 |type|String|장애물 데이터 타입 (image, video)|
 |category|Number|장애물 종류|
