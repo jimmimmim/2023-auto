@@ -27,30 +27,39 @@ react-leaflet: https://react-leaflet.js.org/
 
 ### 초기 화면
 * 화면 좌측: 지도 (서울시립대학교), 우측: 경로 데이터 선택 컨테이너
-![image](https://user-images.githubusercontent.com/72171903/220801615-8a4c952a-5c06-47c0-8c75-6279592bbba5.png)
+<img src="https://user-images.githubusercontent.com/72171903/220801615-8a4c952a-5c06-47c0-8c75-6279592bbba5.png"  width="800" height="auto"/>
+
 
 ### 경로
 * 선택된 경로 표출   
-![image](https://user-images.githubusercontent.com/72171903/220801683-7a652dcb-7a06-4178-8e65-69c99316af4a.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801683-7a652dcb-7a06-4178-8e65-69c99316af4a.png"  width="800" height="auto"/>
+
 * 마우스오버 효과(포커싱) - 선택된 경로 강조   
-![image](https://user-images.githubusercontent.com/72171903/220801696-c122a22a-f401-4ee3-8cf7-08cfdb1aebeb.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801696-c122a22a-f401-4ee3-8cf7-08cfdb1aebeb.png"  width="800" height="auto"/>
+
 * 경로 클릭 팝업 - 경로 색상, 로봇 번호, 측정일    
-![image](https://user-images.githubusercontent.com/72171903/220801708-3fb7dd4a-6050-46a3-8aed-8cb4bec83e93.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801708-3fb7dd4a-6050-46a3-8aed-8cb4bec83e93.png"  width="800" height="auto"/>
+
 
 ### 격자
 * 선택된 경로에 대한 3m 격자 표출   
-![image](https://user-images.githubusercontent.com/72171903/220801735-174d44be-bac7-4288-b831-0e8d87c6256e.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801735-174d44be-bac7-4288-b831-0e8d87c6256e.png"  width="800" height="auto"/>
+
 * 선택된 경로에 대한 5m 격자 표출   
-![image](https://user-images.githubusercontent.com/72171903/220801752-3efc9a29-b1af-4b84-897e-d34f97ccd456.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801752-3efc9a29-b1af-4b84-897e-d34f97ccd456.png"  width="800" height="auto"/>
+
 * 격자 클릭 시 gid (격자아이디) 팝업 표시   
-![image](https://user-images.githubusercontent.com/72171903/220801769-b482b3be-84f5-4a6f-9594-5896b99246d3.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801769-b482b3be-84f5-4a6f-9594-5896b99246d3.png"  width="800" height="auto"/>
 
 ### 장애물 데이터
 * 사고 발생 지점 표출   
-![image](https://user-images.githubusercontent.com/72171903/220801793-58971bcf-1e89-41ba-8455-bc24ddc88a12.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801793-58971bcf-1e89-41ba-8455-bc24ddc88a12.png"  width="800" height="auto"/>
+
 * 사고 발생 지점 클릭 - 아이콘 변경, 장애물 이미지 표출 (우측 이미지 캐러셀)   
-![image](https://user-images.githubusercontent.com/72171903/220801803-b68a52bc-e608-4ec0-a1a4-6f8e6ef97cd6.png)   
-![image](https://user-images.githubusercontent.com/72171903/220801817-f2d4c045-3d44-4ec1-9650-5b0e417df4a7.png)   
+<img src="https://user-images.githubusercontent.com/72171903/220801803-b68a52bc-e608-4ec0-a1a4-6f8e6ef97cd6.png"  width="800" height="auto"/>
+
+<img src="https://user-images.githubusercontent.com/72171903/220801817-f2d4c045-3d44-4ec1-9650-5b0e417df4a7.png"  width="800" height="auto"/>
+
 → 속성 정보 내에 경로 아이디 및 격자 아이디 포함하고 있는 이미지 데이터 표시 (경로 아이디를 통해 가져옴, 이후에는 격자 아이디(gid)를 통해 개별 격자와 연결 예정)   
 → 다른 마커 클릭 혹은 화살표 클릭을 통해 다음 이미지로 이동   
 → 지도 우측 상단 패널에서 ‘사고 발생 지점’ 체크 해제하거나 지도의 빈 곳을 클릭하여 빠져나옴   
@@ -74,7 +83,7 @@ react-leaflet: https://react-leaflet.js.org/
 ```
 |속성|타입|설명|
 |----|---|----|
-|id|String|측정 기기 고유 아이디   (랜덤 아이디로 수정 예정)|
+|id|String|측정 기기 고유 아이디   |
 |gid|String|장애물이 발견된 지점의 격자 아이디   (격자 기반으로 표시하게 될 경우 gid_3, gid_5로 변경되어야 함)|
 |lat|Number|장애물이 발견된 지점의 위도 (EPSG4326)|
 |lon|Number|장애물이 발견된 지점의 경도 (EPSG4326)|
