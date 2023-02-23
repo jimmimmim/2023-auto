@@ -71,14 +71,15 @@ react-leaflet: https://react-leaflet.js.org/
         "seq": 0
 },
 ```
-|속성|설명|
-|----|---|
-|id|측정 기기 고유 아이디   (랜덤 아이디로 수정 예정)|
-|gid|장애물이 발견된 지점의 격자 아이디   (격자 기반으로 표시하게 될 경우 gid_3, gid_5로 변경되어야 함)|
-|lat, lon|장애물이 발견된 지점의 위도 및 경도 좌표 (EPSG4326)|
-|url|장애물 데이터 소스 링크|
-|type|장애물 데이터 타입|
-|category|장애물 종류|
+|속성|타입|설명|
+|----|---|----|
+|id|String|측정 기기 고유 아이디   (랜덤 아이디로 수정 예정)|
+|gid|String|장애물이 발견된 지점의 격자 아이디   (격자 기반으로 표시하게 될 경우 gid_3, gid_5로 변경되어야 함)|
+|lat|Number|장애물이 발견된 지점의 위도 (EPSG4326)|
+|lon|Number|장애물이 발견된 지점의 경도 (EPSG4326)|
+|url|String|장애물 데이터 소스 링크|
+|type|String|장애물 데이터 타입 (image, video)|
+|category|Number|장애물 종류|
 
 ---
 
