@@ -1,6 +1,7 @@
 # 자율주행로봇 모니터링 시스템 MVP
 > 구현 기간: 22.12.27. ~ 23.02.23.   
 > 샘플 데이터: 23.01.02, 23.01.12. 총 2회 서울시립대학교 내부 임의 이동경로 수집
+> React.js, JavaScript, Tailwind.css
 
 ## 설치 및 실행
 ```
@@ -19,7 +20,7 @@ npm start
 |/getGeoData/{meter}|GET|meter의 값에 따라 3m, 5m의 격자json을 반환함|
 
 ## 라이브러리
-reaflet: https://leafletjs.com/   
+leaflet: https://leafletjs.com/   
 react-leaflet: https://react-leaflet.js.org/
 
 ## 실행 화면
