@@ -24,7 +24,7 @@ leaflet: https://leafletjs.com/
 react-leaflet: https://react-leaflet.js.org/
 
 ## 실행 화면
-각 이미지를 클릭하시 새 탭에서 큰 화면으로 확인하실 수 있습니다.
+각 이미지를 클릭하여 새 탭에서 큰 화면으로 확인하실 수 있습니다.
 
 ### 초기 화면
 * 화면 좌측: 지도 (서울시립대학교), 우측: 경로 데이터 선택 컨테이너
