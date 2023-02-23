@@ -9,6 +9,20 @@ npm start
 ```
 사이트가 자동으로 열리지 않을 경우 http://localhost:3000/ 로 직접 접속하시어 실행 가능합니다. (Ctrl을 누른 채로 클릭하면 새 탭에서 열림)
 
+## API
+
+|요청 변수명|타입|설명|
+|---------|:----:|----|
+|/|POST|종료를 알 수 있도록, 리턴값 String으로 반환|
+|/robot-location|POST|body 값에 { “id”: String } 으로 id값 전달, 전체 조회 시 { “id”: “all” } 로 호출|
+|/robot-id|GET|단순 호출 시 전체 id 값을 모두 가져옴|
+|/getGeoData/{meter}|GET|meter의 값에 따라 3m, 5m의 격자json을 반환함|
+
+* “/” (post) -  종료를 알 수 있도록, 리턴값 String으로 반환
+* “/robot-location” (post) - body 값에 { “id”: String } 으로 id값 전달, 전체 조회 시 { “id”: “all” } 로 호출
+* “/robot-id” (get) - 단순 호출시 전체 id 값을 모두 가져옴
+* “/getGeoData/{meter}” - meter의 값에 따라 3m, 5m의 격자json을 반환함
+
 ## 라이브러리
 reaflet: https://leafletjs.com/   
 react-leaflet: https://react-leaflet.js.org/
@@ -47,13 +61,44 @@ react-leaflet: https://react-leaflet.js.org/
 
 ---
 
-### 기타 사용 방법
-팝업 닫기
+## 장애물 이미지 데이터
+```
+{
+        "idx": 1,
+        "id": "F9F6FBF6-B840-4E28-91FE-CB1DDA7EA97F2023/01/12 15:12:55",
+        "gid": "5m_11679",
+        "lat": 37.5850920905,
+        "lon": 127.0573567375,
+        "times": "2023/01/02 11:27:20",
+        "url": "https://gada-bucket.s3.ap-northeast-2.amazonaws.com/9878b61a-948d-46af-bed8-e02c03a45460-KakaoTalk_20221107_143912239_04.png",
+        "type": "image",
+        "category": 0,
+        "seq": 0
+},
+```
+|속성|설명|
+|----|---|
+|id|측정 기기 고유 아이디   (랜덤 아이디로 수정 예정)|
+|gid|장애물이 발견된 지점의 격자 아이디   (격자 기반으로 표시하게 될 경우 gid_3, gid_5로 변경되어야 함)|
+|lat, lon|장애물이 발견된 지점의 위도 및 경도 좌표 (EPSG4326)|
+|url|장애물 데이터 소스 링크|
+|type|장애물 데이터 타입|
+|category|장애물 종류|
+
+---
+
+### 기타 사용 방법 및 주의사항
+
+#### 팝업 닫기
 * 팝업 내 닫기 버튼이 있는 경우 닫기 버튼 클릭
 * 팝업 외부 영역 클릭
 * 키보드의 esc 버튼
 
-지도 확대
+#### 지도 확대
 * 지도 좌측 상단 줌 레벨 컨트롤러
 * 마우스 휠
 * 더블 클릭
+
+#### 주의사항
+* API, json 파일 내 "id" 항목은 데이터 수집 기기의 고유 아이디를 포함하고 있으므로 외부에 노출되지 않도록 주의
+* 캡처 화면 외부 공유 시 로봇 번호 옆 고유 아이디 블러 처리 권장 (추후 랜덤 아이디로 변경될 예정)
